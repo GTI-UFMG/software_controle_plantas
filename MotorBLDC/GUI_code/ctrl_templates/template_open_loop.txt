@@ -24,11 +24,7 @@
 //                  dinamico, ao inves de um estatico.
 
 // Ensaio em malha aberta: envia o valor de comando PWM,
-// alterado via interface grafica, diretamente para o motor BLDC NIDEC.
-
-// Proximo valor a ser enviado para a entrada,
-// como alterado na GUI:
-ref[0] = RefSteps.get(t);
+// alterado via interface grafica, diretamente para o motor DC.
 
 // Aplica o valor diretamente na entrada do sistema
 u[0] = ref[0];

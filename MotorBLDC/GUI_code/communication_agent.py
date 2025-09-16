@@ -26,12 +26,41 @@ _comm_handler_ts = 0.05
 _serial_baudrate = 115200
 
 # Dictionary of Command messages.
-cmd_messages = {"start"     : int(0),
-                "stop"      : int(1),
-                "store_ref" : int(2),
-                "set_ref"   : int(4),
-                "test_comm" : int(8),
-                "set_ts"    : int(16)}
+# The numerical values must correspond to those defined in the C++ code
+# for the ESP32 platform.
+cmd_messages = {
+    "start"     : int(0),
+    "stop"      : int(1),
+    "store_ref" : int(2),
+    "set_ref"   : int(4),
+    "test_comm" : int(8),
+    "set_ts"    : int(16),
+    "set_ctrl_code" : int(32),
+    "set_ctrl_variable" : int(36),
+    "set_ctrl_sys_param" : int(48),
+    "set_deadzone_comp" : int(64)}
+
+# Dictionary of controller code IDs.
+# The numerical values must correspond to those defined in the C++ code
+# for the ESP32 platform.
+ctrl_code = {
+    "ctrl_open_loop" : int(0),
+    "ctrl_pid_ct"    : int(1),
+    "ctrl_ft_ct"     : int(2),
+    "ctrl_pid_dt"    : int(4),
+    "ctrl_ft_dt"     : int(8),
+    "ctrl_custom"    : int(16)}
+
+ctrl_var = {
+    "speed"    : int(0),
+    "position" : int(1)}
+
+# Dictionary of Pre-programmed Controllers parameters. It should match
+# the values defined in the C++ code for the ESP32 platform.   
+ctrl_sys_params = {
+    "ctrl_sys_param_kp" : int(0),
+    "ctrl_sys_param_ti" : int(1),
+    "ctrl_sys_param_td" : int(2)}
 
 # Maximum length for the command queue.
 _cmd_queue_maxsize = 10
@@ -167,7 +196,7 @@ class CommunicationAgent:
             with self.data_lock:
                 self.data_count = 0 # Reset data count at start of new experiment.
         
-        cmdMsg = [int(cmd_id),cmd_val1,cmd_val2]       
+        cmdMsg = [int(cmd_id),float(cmd_val1),float(cmd_val2)]       
              
         self.cmd_queue.put_nowait(cmdMsg)
 

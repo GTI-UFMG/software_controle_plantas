@@ -40,6 +40,10 @@ typedef struct {
 #define SET_REF_CMD 4
 #define TEST_COMM 8
 #define SET_TS 16
+#define SET_CTRL_CODE 32
+#define SET_CTRL_VARIABLE 36
+#define SET_CTRL_SYS_PARAM 48
+#define SET_DEADZONE_COMP 64
 
 // Command message structure:
 typedef struct {
@@ -220,6 +224,46 @@ void ControlTask(void *pvParameters)
         // 'cmd_val1' should be the sample time in [ms].
         CtrlSys.set_sample_time(msgCmd_package.cmd_val1);
 
+      break;
+
+      case SET_CTRL_VARIABLE:
+        // Cannot change controlled variable while the control task 
+        // is running. Stop, if necessary.
+        if (ctrl_task_state == 1) {
+          ctrl_task_state = 0;
+          CtrlSys.on_stop_task();
+
+          // Delete any remaining data that was put on the data queue.
+          xQueueReset(queueData);
+        }
+
+        // Set the controller strategy
+        CtrlSys.set_ctrl_variable((unsigned int) msgCmd_package.cmd_val1);
+      break;
+
+      case SET_CTRL_CODE:
+        // Cannot change controller strategy while the control task 
+        // is running. Stop, if necessary.
+        if (ctrl_task_state == 1) {
+          ctrl_task_state = 0;
+          CtrlSys.on_stop_task();
+
+          // Delete any remaining data that was put on the data queue.
+          xQueueReset(queueData);
+        }
+
+        // Set the controller strategy
+        CtrlSys.set_ctrl_code((unsigned int) msgCmd_package.cmd_val1);
+      break;
+
+      case SET_DEADZONE_COMP:
+        // Set the inferior (cn) and superior (cp) limits for the dead zone compensation.
+        CtrlSys.set_deadzone_comp(msgCmd_package.cmd_val1, msgCmd_package.cmd_val2);
+      break;
+
+      case SET_CTRL_SYS_PARAM:
+        // Set parameters for a pre-programmed control strategy.
+        CtrlSys.set_internal_param((unsigned int) msgCmd_package.cmd_val1, msgCmd_package.cmd_val2);
       break;
 
       case TEST_COMM:

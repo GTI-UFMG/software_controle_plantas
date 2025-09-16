@@ -13,7 +13,9 @@
 //
 // This file can be rewritten by the GUI depending on the user choice. 
 //
-void ControlSystem::run_controller_code(float t)
+int ControlSystem::custom_ctrl_code(float t)
 {
     #include "control_strategy.txt"
+
+    return 1;
 }

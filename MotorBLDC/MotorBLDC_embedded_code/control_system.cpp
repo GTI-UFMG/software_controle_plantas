@@ -33,29 +33,50 @@ void ControlSystem::set_sample_time(float new_ts) {
         N_ts = 1;
 }
 
-float ControlSystem::get_internal_param(int n) {
-  if ((n > 0) && (n < CTRL_SYS_NPARAMS))
+float ControlSystem::get_internal_param(unsigned int n) {
+  if ((n >= 0) && (n < CTRL_SYS_NPARAMS))
     return internal_param[n];
   
   // Specific value that will signal an error.
   return -1234.0f;
 }
 
-void ControlSystem::set_internal_param(int n, float val) {
-  if ((n > 0) && (n < CTRL_SYS_NPARAMS))
+void ControlSystem::set_internal_param(unsigned int n, float val) {
+  if ((n >= 0) && (n < CTRL_SYS_NPARAMS))
     internal_param[n] = val;
 }
 
+void ControlSystem::set_ctrl_code(unsigned int code) {
+  ctrl_code_id = code;
+}
+
+void ControlSystem::set_ctrl_variable(unsigned int option) {
+  ctrl_variable = option;
+}
+
+void ControlSystem::set_deadzone_comp(float cn, float cp) {
+  deadzone_cn = cn;
+  deadzone_cp = cp;
+}
+
 ControlSystem::ControlSystem(void) {
-  // Zero = not specified.
-  // Any nonzero value will represent other possibilities.
-  ctrl_code_id = 0.0f;
+  unsigned char n;
+  
+  // Controller strategy: initially = open loop.
+  ctrl_code_id = CTRL_OPEN_LOOP;
 
   // Sample time as an integer multiple of CONTROL_TASK_TS
   N_ts = 1;
 
-  for (int n = 0; n < CTRL_SYS_NPARAMS; n++)
+  for (n = 0; n < CTRL_SYS_NPARAMS; n++)
     internal_param[n] = 0.0f;
+
+  // No deadzone compensation.
+  deadzone_cn = 0.0f;
+  deadzone_cp = 0.0f;
+
+  // Set controlled variable as 'speed'.
+  ctrl_variable = CTRL_VAR_SPEED;
 
   reset();
 }
@@ -64,11 +85,15 @@ ControlSystem::~ControlSystem(void) {
   on_stop_task();
 }
 
+// Prepare sensors and actuators.
 void ControlSystem::Initialize(void) {
   setup_sensors();
   setup_actuators();
 }
 
+// Reset internal signals and the sampling time.
+// Warning: This code do not change the controlled variable
+// nor the controller strategy, nor the controller parameters.  
 void ControlSystem::reset(void) {
   unsigned char n;
 
@@ -108,13 +133,101 @@ int ControlSystem::run(float t)
     measure_signals(t);
     meas_last_t = t;
 
-    run_controller_code(t);
+    // Get the reference value:
+    ref[0] = RefSteps.get(t);
+
+    retval = run_controller_code(t);
+    if (retval) {
+      // Effectively changes the control action
+      // by introducing the dead-zone compensation.
+      if (u[0] > 0.0f)
+        u[0] += deadzone_cp;
+      else
+        if (u[0] < 0.0f)
+          u[0] += deadzone_cn;
+    }
+    else
+      u[0] = 0.0f;
+      
     command_actuators();
     ctrl_last_t = t;
 
-    retval = 1;
   }
   pace_counter += 1;
+
+  return retval;
+}
+
+/////////////////////////////////////////
+// Pre-programmed Controller Strategies: 
+////////////////////////////////////////
+
+int ControlSystem::ctrl_open_loop(float t) 
+{
+  // Connects reference to input directly:
+  u[0] = ref[0];
+
+  return 1;
+}
+
+int ControlSystem::ctrl_pid_ct(float t)
+{
+  // Ensaio em malha Fechada: usando PID especificado a partir 
+  // de Kp, Ti e Td, e implementado usando:
+  //
+  // Acao integral = transformacao bilinear (ou regra do trapezio)
+  // Acao derivativa = Euler de um passo-a-frente (assim garante-se 
+  //                   atenuacao em altas frequencias mais efetiva do
+  //                   que o que se obtem via transformacao bilinear)
+
+  float kp = internal_param[CTRL_SYS_PARAM_KP]; 
+  float Ti = internal_param[CTRL_SYS_PARAM_TI];
+  float Td = internal_param[CTRL_SYS_PARAM_TD];
+
+  // Actual Sample time:
+  float ts;
+
+  // Auxiliary variables:
+  float e;
+
+  ts = t - ctrl_last_t;
+
+  if (ctrl_variable == CTRL_VAR_POSITION)
+    e = ref[0] - ym[0];
+  else
+    e = ref[0] - ym[1];
+
+  // Compute the output:
+  if (Ti > 0.0f)
+    u[0] = kp*(e + 1/Ti*(ts/2.0f*e + xc[0]) + Td/ts*(e - xc[1]));
+  else
+    u[0] = kp*(e + Td/ts*(e - xc[1]));
+
+  // Update controller internal states:
+  xc[0] = xc[0] + ts*e;
+  xc[1] = e;
+
+  return 1;
+}
+
+int ControlSystem::run_controller_code(float t) 
+{
+  int retval = 0;
+
+  switch(ctrl_code_id) {
+
+    case CTRL_OPEN_LOOP:
+      return ctrl_open_loop(t);
+    break;
+
+    case CTRL_PID_CT:
+      return ctrl_pid_ct(t);
+    break;
+
+    default: // Do nothing.
+      u[0] = 0.0;
+      return 1;
+  }
 
   return retval;
 }

@@ -34,12 +34,15 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tabWidge_main">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="tabShape">
        <enum>QTabWidget::TabShape::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_general_configuration">
        <property name="enabled">
@@ -50,7 +53,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_9">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_15" stretch="0,0">
+         <layout class="QVBoxLayout" name="verticalLayout_15" stretch="1,1">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
@@ -183,54 +186,6 @@
                <property name="checked">
                 <bool>true</bool>
                </property>
-              </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_test_type">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="title">
-               <string>Tipo de Ensaio</string>
-              </property>
-              <widget class="QWidget" name="verticalLayoutWidget">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>20</y>
-                 <width>131</width>
-                 <height>71</height>
-                </rect>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
-                <item>
-                 <widget class="QRadioButton" name="radioButton_open_loop">
-                  <property name="text">
-                   <string>Malha Aberta</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="radioButton_closed_loop">
-                  <property name="text">
-                   <string>Malha Fechada</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </widget>
              </widget>
             </item>
@@ -371,7 +326,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="rowCount">
-                  <number>20</number>
+                  <number>15</number>
                  </property>
                  <property name="columnCount">
                   <number>2</number>
@@ -388,11 +343,6 @@
                  <attribute name="verticalHeaderDefaultSectionSize">
                   <number>24</number>
                  </attribute>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
                  <row/>
                  <row/>
                  <row/>
@@ -732,14 +682,17 @@ com o Sistema</string>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_controller">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <attribute name="title">
         <string>Controlador</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_11">
         <item>
-         <widget class="QTabWidget" name="tabWidget_2">
+         <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_general_config">
            <property name="sizePolicy">
@@ -753,7 +706,7 @@ com o Sistema</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_16" stretch="3,2">
             <item>
-             <widget class="QGroupBox" name="groupBox_2">
+             <widget class="QGroupBox" name="groupBox_controller_choice">
               <property name="title">
                <string>Escolha do Controlador</string>
               </property>
@@ -780,7 +733,20 @@ com o Sistema</string>
                   </spacer>
                  </item>
                  <item>
+                  <widget class="QRadioButton" name="radioButton_open_loop">
+                   <property name="text">
+                    <string>Malha Aberta</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QRadioButton" name="radioButton_PID_s">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -791,7 +757,7 @@ com o Sistema</string>
                     <string>PID em &quot;s&quot;</string>
                    </property>
                    <property name="checked">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -900,7 +866,10 @@ com o Sistema</string>
              </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="groupBox">
+             <widget class="QGroupBox" name="groupBox_deadzone_comp">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -917,35 +886,14 @@ com o Sistema</string>
                <string>Compensação de Zona Morta</string>
               </property>
               <property name="checkable">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
-              <widget class="QCheckBox" name="checkBox_use_deadzone_comp">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>20</y>
-                 <width>231</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Ubuntu</family>
-                 <pointsize>10</pointsize>
-                 <italic>false</italic>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="text">
-                <string>Usar compensação de Zona Morta</string>
-               </property>
-              </widget>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
               <widget class="QLabel" name="label_12">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="geometry">
                 <rect>
@@ -977,6 +925,9 @@ com o Sistema</string>
                <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0" columnstretch="0,0">
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_19">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
                   <property name="text">
                    <string>Cp :</string>
                   </property>
@@ -985,7 +936,7 @@ com o Sistema</string>
                 <item row="0" column="1">
                  <widget class="QSpinBox" name="spinBox_Cp">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="maximum">
                    <number>255</number>
@@ -997,6 +948,9 @@ com o Sistema</string>
                 </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_20">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
                   <property name="text">
                    <string>Cn :</string>
                   </property>
@@ -1005,7 +959,7 @@ com o Sistema</string>
                 <item row="1" column="1">
                  <widget class="QSpinBox" name="spinBox_Cn">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimum">
                    <number>-255</number>
@@ -1019,6 +973,27 @@ com o Sistema</string>
                  </widget>
                 </item>
                </layout>
+              </widget>
+              <widget class="QLabel" name="label_26">
+               <property name="geometry">
+                <rect>
+                 <x>450</x>
+                 <y>30</y>
+                 <width>191</width>
+                 <height>151</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>O valor de Cp será adicionado ao comando PWM, sempre que se computar uma ação de controle 'u' positiva.
+
+ O valor de Cn será sempre adicionado ao comando PWM, sempre que a ação de controle 'u' for negativa.</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::TextFormat::AutoText</enum>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
               </widget>
              </widget>
             </item>
@@ -1053,7 +1028,7 @@ com o Sistema</string>
              <bool>false</bool>
             </property>
            </widget>
-           <widget class="QGroupBox" name="groupBox_5">
+           <widget class="QGroupBox" name="groupBox_ct_ti">
             <property name="geometry">
              <rect>
               <x>50</x>
@@ -1081,7 +1056,7 @@ com o Sistema</string>
               <string>Ti, em [seg.] :</string>
              </property>
             </widget>
-            <widget class="QLineEdit" name="lineEdit">
+            <widget class="QLineEdit" name="lineEdit_ct_ti">
              <property name="geometry">
               <rect>
                <x>100</x>
@@ -1095,7 +1070,7 @@ com o Sistema</string>
              </property>
             </widget>
            </widget>
-           <widget class="QGroupBox" name="groupBox_6">
+           <widget class="QGroupBox" name="groupBox_ct_td">
             <property name="geometry">
              <rect>
               <x>50</x>
@@ -1126,7 +1101,7 @@ com o Sistema</string>
               <string>Td, em [seg] :</string>
              </property>
             </widget>
-            <widget class="QLineEdit" name="lineEdit_2">
+            <widget class="QLineEdit" name="lineEdit_ct_td">
              <property name="geometry">
               <rect>
                <x>100</x>
@@ -1136,7 +1111,7 @@ com o Sistema</string>
               </rect>
              </property>
              <property name="text">
-              <string>0,1</string>
+              <string>0</string>
              </property>
             </widget>
            </widget>
@@ -1145,7 +1120,7 @@ com o Sistema</string>
              <rect>
               <x>50</x>
               <y>130</y>
-              <width>281</width>
+              <width>371</width>
               <height>91</height>
              </rect>
             </property>
@@ -1168,7 +1143,7 @@ com o Sistema</string>
               <string>Kp :</string>
              </property>
             </widget>
-            <widget class="QLineEdit" name="lineEdit_3">
+            <widget class="QLineEdit" name="lineEdit_ct_kp">
              <property name="geometry">
               <rect>
                <x>40</x>
@@ -1178,21 +1153,21 @@ com o Sistema</string>
               </rect>
              </property>
              <property name="text">
-              <string>0,23</string>
+              <string>1</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_22">
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>50</y>
-               <width>261</width>
-               <height>31</height>
+               <y>40</y>
+               <width>351</width>
+               <height>41</height>
               </rect>
              </property>
              <property name="text">
-              <string>Ex.: Kp = 2 indica que PWM = 2, quando
-erro = 1 [deg] (ou 1 [deg/s]).</string>
+              <string>Ex.: Kp = 2 indica que, supondo apenas ação proporcional,
+PWM = 2, quando erro = 1 [deg] (ou 1 [deg/s]).</string>
              </property>
             </widget>
            </widget>
@@ -1277,10 +1252,6 @@ background-color: rgb(237, 251, 255);</string>
 
 // Ensaio em malha aberta: envia o valor de comando PWM,
 // alterado via interface grafica, diretamente para o motor BLDC NIDEC.
-
-// Proximo valor a ser enviado para a entrada,
-// como alterado na GUI:
-ref[0] = RefSteps.get(t);
 
 // Aplica o valor diretamente na entrada do sistema
 u[0] = ref[0];
@@ -1628,7 +1599,7 @@ border-color: rgb(85, 0, 255);</string>
               <widget class="QLineEdit" name="lineEdit_manual_input">
                <property name="geometry">
                 <rect>
-                 <x>90</x>
+                 <x>110</x>
                  <y>60</y>
                  <width>41</width>
                  <height>21</height>
@@ -1650,14 +1621,17 @@ border-color: rgb(85, 0, 255);</string>
               <widget class="QLabel" name="label_manual_input">
                <property name="geometry">
                 <rect>
-                 <x>40</x>
+                 <x>10</x>
                  <y>60</y>
-                 <width>51</width>
+                 <width>91</width>
                  <height>21</height>
                 </rect>
                </property>
                <property name="text">
                 <string>PWM =</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
                <property name="wordWrap">
                 <bool>true</bool>

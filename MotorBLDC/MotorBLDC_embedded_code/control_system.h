@@ -11,6 +11,18 @@
 
 #include <cstddef>
 
+// Types of controlled variables:
+#define CTRL_VAR_SPEED    0
+#define CTRL_VAR_POSITION 1
+
+// Types of pre-programmed controllers:
+#define CTRL_OPEN_LOOP 0
+#define CTRL_PID_CT    1   // PID in continuous time.
+#define CTRL_FT_CT     2   // Transfer function in "s" (zpk format).
+#define CTRL_PID_DT    4   // PID in discrete time.
+#define CTRL_FT_DT     8   // Transfer function in "z" (zpk format).
+#define CTRL_CUSTOM   16   // Custom controller.
+
 // Number of controller internal states.
 #ifndef CTRL_SYS_NC
 #define CTRL_SYS_NC 6
@@ -66,6 +78,18 @@ class ControlSystem {
         // without changing the control task periodic scheduling.
         unsigned int N_ts, pace_counter;
 
+        // Set dead-zone compensation by 
+        // using negative deadzone_cn value and 
+        // positive deadzone_cp value.
+        float deadzone_cn, deadzone_cp;
+
+        // Internal controller ID code.
+        unsigned int ctrl_code_id; 
+
+        // Which output will be considered as controlled variable 
+        // (e.g. for motors one has 'position' or 'speed'):
+        unsigned int ctrl_variable;
+
         // Controller state vector.
         float xc[CTRL_SYS_NC];
 
@@ -90,6 +114,19 @@ class ControlSystem {
         // Last time measurement process function was called.
         float meas_last_t;
 
+        // Actual control code. Declaration.
+        int run_controller_code(float t);
+
+        //////////////////////////////////////
+        // Pre-programmed Control Strategies:
+        /////////////////////////////////////
+        int ctrl_open_loop(float t);
+        int ctrl_pid_ct(float t);
+        // int ctrl_pid_dt(float t);
+        // int ctrl_ft_ct(float t);
+        // int ctrl_ft_dt(float t);
+        int custom_ctrl_code(float t);
+
         // Internal functions that will be defined 
         // for different systems to be controlled.
 
@@ -102,17 +139,8 @@ class ControlSystem {
         // Measurement process.
         void measure_signals(float t);
 
-        // Actual control code. Declaration.
-        void run_controller_code(float t);
-
         // Actuation process declaration.
         void command_actuators(void);
-
-        // Internal controller code.
-        // The idea is to use this ID value
-        // to inform to the GUI in the PC what is
-        // code implemented in the hardware.
-        float ctrl_code_id;
 
     public:
         // Constructors. 
@@ -140,8 +168,17 @@ class ControlSystem {
         void set_sample_time(float new_ts);
 
         // Internal parameters:
-        float get_internal_param(int n);
-        void set_internal_param(int n, float val);
+        float get_internal_param(unsigned int n);
+        void set_internal_param(unsigned int n, float val);
+
+        // Controller pre-programmed strategies:
+        void set_ctrl_code(unsigned int code);
+
+        // Set the controlled variable:
+        void set_ctrl_variable(unsigned int option);
+
+        // Dead-zone compensation:
+        void set_deadzone_comp(float cn, float cp);
 
         // Control system initialization.
         void reset(void);

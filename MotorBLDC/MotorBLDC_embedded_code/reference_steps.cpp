@@ -22,10 +22,10 @@ void ReferenceSteps::reset(void)
 
 void ReferenceSteps::set(float t, float value)
 {
-  // Prepare to change the set point 0.2s after receiving the command.
+  // Prepare to change the set point 0.1s after receiving the command.
   ref_steps[0].time = t;
   ref_steps[0].refvalue = ref_steps[ref_step_current].refvalue;
-  ref_steps[1].time = t + 0.2f;
+  ref_steps[1].time = t + 0.1f;
   ref_steps[1].refvalue = value;
   ref_step_current = 0;
   ref_steps_size = 2;
