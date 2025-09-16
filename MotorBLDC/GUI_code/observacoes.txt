@@ -1,0 +1,98 @@
+
+
+   Mudanças no código de controle das plantinhas:
+   
+   1. Evitar que a thread GUI se comunique diretamente com 
+   o sistema embarcado. Ideia: transformar  a função 
+   CommunicationHandler em uma classe que contém 
+   funções membro que permitam:
+   
+	- Modificar a porta serial
+	- Executar o laço de recebimento e envio de mensagens 
+	  com base na máquina de estados do sistema de comunicação.
+	- Enviar mensagens específicas e repassar as respostas
+	para a thread GUI.
+	- Repassar porções específicas do vetor de dados, como 
+	as últimas amostras, por exemplo.
+	- Indicar o status da thread de comunicação.
+	
+   Além disso, pode-se criar um objeto mutável (que será passado 
+   por referência porque é mutável) do tipo 
+   dicionário (?) como variável interna da classe que contenha
+      
+	  - comm_data_lock
+	  - comm_data_serial_port
+	  - comm_data_state
+	  
+	  - cmd_queue
+	  - resp_queue
+	  
+	  - data_lock
+	  - data_array
+	  - data_count
+	  
+  2. No momento tem-se:
+	- Um dicionário de mensagens de comando.
+	- Cada mensagem de comando envia 1 inteiro e 2 floats, e recebe o mesmo.
+	- Somente a mensagem "test_comm" responde algo específico.
+	
+	É importante repensar o protocolo de comunicação para permitir 
+	um tráfego mais limpo de comandos e de dados. 
+	Por enquanto, algo basilar foi considerar canais de comunicação
+	unidirecionais de comando e de dados, fazendo com que 
+	respostas a comandos enviados pela GUI tenham que trafegar de volta
+	no canal de dados, o que não parece muito "limpo".
+	
+	Uma reestruturação possível seria a de reservar valores temporais
+	com números negativos para envio de mensagens do sistema embarcado
+	para o computador, sejam elas respostas a comandos, ou até mesmo 
+	informação, ou requisição de informação.
+	
+	Nesse sentido, o computador também poderia enviar mensagens de 
+	dados para o sistema embarcado, usando valores negativos de tempo.
+	
+		tempo < 0  -> mensagem com estrutura 1 de comando.
+		tempo >= 0 -> mensagem com estrutura 2 de dados. 
+		
+	Isto implicaria em se detectar, nas máquinas de estados de tratamento
+	de mensagens, inicialmente o valor do tempo (float), para depois decidir
+	qual estrutura deveria ser preenchida. Ambos os pacotes de tempo teminam
+	ainda com "end", que seguiria sendo o marcador de fim da mensagem.
+	
+	Alternativamente, as mensagens poderiam ter estrutura unificada:
+	
+	   - Campo 1: char.
+	   - Campo 2: float.
+	   - Campo 3: float.
+	   - Campo 4: float.
+	   - Campo 5: float.
+	   
+	   Campo 1: tipo de mensagem.
+	   Campo 2: se mensagem é dado -> tempo.
+	            caso contrário -> tempo para dado de setpoint.
+                               ou valor do parâmetro 1 do controlador,
+							   ou -3.141592f para indicar mensagem especial de requisição de informação SE -> GUI,
+                               ou ...							   
+	   Campo 3: se mensagem é dado -> ym
+	   Campo 4: se mensagem é dado -> u
+	   Campo 5: se mensagem é dado -> yref
+	   
+	   Dados de outros pares de entrada/saída do sistema podem ser obtidos usando 
+	   diferentes mensagens de configuração antes do início do fluxo 
+	   de dados.
+			
+
+	3. Differences between ttyUSB0 and ttyACM0 on Linux:
+
+		Driver: ttyACM0 uses a generic USB CDC ACM driver,
+		while ttyUSB0 uses chipset-specific drivers.
+
+		Device Type: ttyACM0 is common for microcontrollers with integrated
+		USB-to-serial (e.g., Arduino), while ttyUSB0 is common for external
+		USB-to-serial adapters.
+
+		Reset Behavior: Opening ttyACM0 often triggers a reset,
+		while ttyUSB0 typically does not.
+			
+                                 								  
+	   
