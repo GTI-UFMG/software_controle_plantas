@@ -1,0 +1,43 @@
+///////////////////////////////////////////////////////////////////
+// Implemente o calculo da acao de controle aqui.
+//
+// Variaveis que voce pode usar (jah estao disponiveis):
+//
+//   t           -> tempo [s]
+//   ctrl_last_t -> ultimo instante de tempo em que o
+//                  codigo do controlador foi executado [s].
+//                  Obs.: (t - ctrl_last_t) deve ser bem proximo
+//                  do intervalo de controle = 10ms.
+//
+//   ym          -> vetor de sinais medidos: ym[0] a ym[3]:
+//                  ym[0] = posicao em [graus].
+//                  ym[1] = velocidade angular [graus/s].
+//
+//
+//   ref         -> vetor de sinais de referencia: ref[0].
+//
+//   u           -> vetor de sinais de entrada da planta u[0].
+//
+//   xc          -> vetor de estados do controlador
+//                  (inicializados com valor zero): xc[0] a xc[5].
+//                  Use para implementar um controlador
+//                  dinamico, ao inves de um estatico.
+
+// Controlador: proporcional
+
+// Erro [graus]:
+float e;
+
+// Ganho proporcional em [unidades PWM/grau]:
+const float kp = 1.5f;
+
+// Ensaio em malha fechada: usa o valor de comando PWM,
+// alterado via interface grafica, como sinal de referencia
+// em [graus]:
+ref[0] = RefSteps.get(t);
+
+// Calculo do erro:
+e = ref[0] - ym[0];
+
+// Calculo da acao de controle
+u[0] = kp*e;

@@ -1,0 +1,19 @@
+///////////////////////////////////////////////////////////////////
+// Implemente o calculo da compensacao de zona morta.
+//
+// Codigo acrescentado apos calculo da acao de controle.
+//
+// Acrescenta ou subtrai o valor apropriado para o limiar de tensao 
+// necessario para fazer o motor girar, a partir da velocidade zero.
+//
+
+if (u[0] > 0.0)
+   u[0] = u[0] + @PWM_POSITIVE_COMPENSATION;
+
+if (u[0] < 0.0)
+	u[0] = u[0] + @PWM_NEGATIVE_COMPENSATION;
+
+
+
+
+

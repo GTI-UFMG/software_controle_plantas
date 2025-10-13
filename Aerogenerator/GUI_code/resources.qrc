@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="images">
+    <file>GUI_resources/PID_in_s.png</file>
+    <file>GUI_resources/comp_dead-zone.png</file>
+  </qresource>
+</RCC>

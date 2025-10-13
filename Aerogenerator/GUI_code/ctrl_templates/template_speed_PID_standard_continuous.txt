@@ -1,0 +1,57 @@
+///////////////////////////////////////////////////////////////////
+// Implemente o calculo da acao de controle aqui.
+//
+// Variaveis que voce pode usar (jah estao disponiveis):
+//
+//   t           -> tempo [s]
+//   ctrl_last_t -> ultimo instante de tempo em que o
+//                  codigo do controlador foi executado [s].
+//                  Obs.: (t - ctrl_last_t) deve ser bem proximo
+//                  do intervalo de controle = 10ms.
+//
+//   ym          -> vetor de sinais medidos: ym[0] a ym[3]:
+//                  ym[0] = posicao em [graus].
+//                  ym[1] = velocidade angular [graus/s].
+//
+//
+//   ref         -> vetor de sinais de referencia: ref[0].
+//
+//   u           -> vetor de sinais de entrada da planta u[0].
+//
+//   xc          -> vetor de estados do controlador
+//                  (inicializados com valor zero): xc[0] a xc[5].
+//                  Use para implementar um controlador
+//                  dinamico, ao inves de um estatico.
+
+// Ensaio em malha Fechada: usando PID especificado a partir 
+// de Kp, Ti e Td, e implementado usando:
+//
+// Acao integral = transformacao bilinear (ou regra do trapezio)
+// Acao derivativa = Euler de um passo-a-frente (assim garante-se 
+//                   atenuacao em altas frequencias mais efetiva do
+//                   que o que se obtem via transf. bilinear)
+
+const float kp = internal_param[CTRL_SYS_PARAM_KP]; 
+const float Ti = internal_param[CTRL_SYS_PARAM_TI];
+const float Td = internal_param[CTRL_SYS_PARAM_TD];
+
+// Actual Sample time:
+float ts;
+
+// Auxiliary variables:
+float e;
+
+ts = t - ctrl_last_t;
+
+e = ref[0] - ym[1];
+
+// Compute the output:
+if (Ti > 0.0f)
+	u[0] = kp*(e + 1/Ti*(ts/2.0f*e + xc[0]) + Td/ts*(e - xc[1]));
+else	
+	u[0] = kp*(e + Td/ts*(e - xc[1]));
+
+// Update controller internal states:
+xc[0] = xc[0] + ts*e;
+xc[1] = e;
+
