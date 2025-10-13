@@ -10,10 +10,10 @@
 #define PWM_RESOLUTION 8
 
 // BLDC Cooler AFB0812SH Motor connection
-#define PWM               14  // (INV_A) 
+#define PWM               14  // Blue wire to the AFB0812SH motor (PWM speed control) 
 #define ENCODER_CHA       32  // From the generator optocoupler.  
 #define ENCODER_CHB       35  // From the cooler motor optocoupler.
-#define ENCODER_PPR       4   // Pulses Per Revolution (Encoder 11 PPR, vallue at output verified experimentally)
+#define ENCODER_PPR       4   // Pulses Per Revolution (plastic propeller with 4 blades)
 #define ADC_PIN           34  // Analog-to-Digital Covnerter pin
 #define PWM_CH 1
 
