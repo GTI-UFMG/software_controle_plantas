@@ -44,8 +44,12 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.controlled_output = "voltage"
         self.radioButton_voltage.setChecked(True)
 
+        # No dead-zone compensation by default.
+        self.groupBox_deadzone_comp.setChecked(False)
+
         self.test_type = "open loop"
         self.radioButton_open_loop.setChecked(True)
+        self.on_radioButton_open_loop_toggled()
 
         self.reference_input = "manual"
         self.radioButton_manual.setChecked(True)
@@ -104,13 +108,13 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.horizontalSlider_manual_input.setMaximum(2000)
                 self.horizontalSlider_manual_input.setMinimum(0)
                 self.horizontalSlider_manual_input.setValue(0)
-                self.horizontalSlider_manual_input.setSingleStep(10)
+                self.horizontalSlider_manual_input.setTickInterval(100)
             else:
                 self.label_manual_input.setText("Referência [mV] =")
                 self.horizontalSlider_manual_input.setMaximum(2000)
                 self.horizontalSlider_manual_input.setMinimum(0)
                 self.horizontalSlider_manual_input.setValue(0)
-                self.horizontalSlider_manual_input.setSingleStep(10)
+                self.horizontalSlider_manual_input.setTickInterval(100)
 
         # Plot 1 configuration
         self.widget_plot_1.getPlotItem().clear()
@@ -307,7 +311,6 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.plainTextEdit_message_area.appendPlainText("\nControle em Malha Aberta selecionado.")    
         else:
             if self.radioButton_PID_s.isChecked():
-                
                 self.plainTextEdit_message_area.appendPlainText("Estratégia de Controle escolhida: PID em 's'.")    
                 
                 kp,_ = self.process_value_from_text(self.lineEdit_ct_kp.displayText())
@@ -506,6 +509,13 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def on_radioButton_open_loop_toggled(self):
         if self.radioButton_open_loop.isChecked():
             self.test_type = "open loop"
+            txtmessage = (
+                "Teste em Malha Aberta selecionado.\n"
+                "Neste modo de operação, o sistema não utiliza um controlador.\n"
+                "O valor do sinal de entrada (PWM) é definido manualmente pelo usuário.\n"
+                "Use o controle deslizante ou o campo de edição para definir o valor do PWM."
+            )
+            self.textEdit_control_info.setPlainText(txtmessage)
         else:
             self.test_type = "closed loop"
             
@@ -525,7 +535,22 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # to the ESP32 embedded code. (September, the 13th, 2025).
             
         self.configure_GUI_experiment()
-
+        
+    @QtCore.Slot()
+    def on_radioButton_PID_s_toggled(self):
+        if self.radioButton_PID_s.isChecked():           
+            txtmessage = (
+                "Controle PID em 's' selecionado.\n"
+                "Neste modo de operação, o sistema utiliza um controlador PID implementado no domínio 's', " 
+                "isto é, como se estivéssemos usando um controlador *contínuo*. "
+                "Neste caso, é importante usar um intervalo de amostragem suficientemente pequeno.\n\n"
+                "A implementação digital real utiliza a transformação bilinear para a ação integral, e o método de Euler"
+                " para a ação derivativa.\n\n"
+                "\tDefina os parâmetros do controlador (Kp, Ti, Td) nos campos\n"
+                "\tapropriados na aba \"PID em 's' \".\n"
+            )
+            self.textEdit_control_info.setPlainText(txtmessage)
+    
     @QtCore.Slot()
     def on_pushButton_ctrl_code_released(self):
         ctrl_code = self.comboBox_ctrl_code.currentText()

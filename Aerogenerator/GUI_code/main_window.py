@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windoweiPime.ui'
+## Form generated from reading UI file 'main_windowwDpoom.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.2
 ##
@@ -421,10 +421,10 @@ class Ui_MainWindow(object):
         self.groupBox_deadzone_comp.setSizePolicy(sizePolicy)
         self.groupBox_deadzone_comp.setMinimumSize(QSize(0, 220))
         self.groupBox_deadzone_comp.setCheckable(True)
-        self.groupBox_deadzone_comp.setChecked(False)
+        self.groupBox_deadzone_comp.setChecked(True)
         self.label_12 = QLabel(self.groupBox_deadzone_comp)
         self.label_12.setObjectName(u"label_12")
-        self.label_12.setEnabled(False)
+        self.label_12.setEnabled(True)
         self.label_12.setGeometry(QRect(260, 10, 161, 201))
         self.label_12.setPixmap(QPixmap(u":/images/GUI_resources/comp_dead-zone.png"))
         self.label_12.setScaledContents(False)
@@ -436,35 +436,36 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.label_19 = QLabel(self.layoutWidget)
         self.label_19.setObjectName(u"label_19")
-        self.label_19.setEnabled(False)
+        self.label_19.setEnabled(True)
 
         self.gridLayout_2.addWidget(self.label_19, 0, 0, 1, 1)
 
         self.spinBox_Cp = QSpinBox(self.layoutWidget)
         self.spinBox_Cp.setObjectName(u"spinBox_Cp")
-        self.spinBox_Cp.setEnabled(False)
+        self.spinBox_Cp.setEnabled(True)
         self.spinBox_Cp.setMaximum(255)
-        self.spinBox_Cp.setValue(144)
+        self.spinBox_Cp.setValue(152)
 
         self.gridLayout_2.addWidget(self.spinBox_Cp, 0, 1, 1, 1)
 
         self.label_20 = QLabel(self.layoutWidget)
         self.label_20.setObjectName(u"label_20")
-        self.label_20.setEnabled(False)
+        self.label_20.setEnabled(True)
 
         self.gridLayout_2.addWidget(self.label_20, 1, 0, 1, 1)
 
         self.spinBox_Cn = QSpinBox(self.layoutWidget)
         self.spinBox_Cn.setObjectName(u"spinBox_Cn")
-        self.spinBox_Cn.setEnabled(False)
+        self.spinBox_Cn.setEnabled(True)
         self.spinBox_Cn.setMinimum(-255)
         self.spinBox_Cn.setMaximum(0)
-        self.spinBox_Cn.setValue(-139)
+        self.spinBox_Cn.setValue(0)
 
         self.gridLayout_2.addWidget(self.spinBox_Cn, 1, 1, 1, 1)
 
         self.label_26 = QLabel(self.groupBox_deadzone_comp)
         self.label_26.setObjectName(u"label_26")
+        self.label_26.setEnabled(True)
         self.label_26.setGeometry(QRect(450, 30, 191, 151))
         self.label_26.setTextFormat(Qt.TextFormat.AutoText)
         self.label_26.setWordWrap(True)
@@ -472,7 +473,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.addWidget(self.groupBox_deadzone_comp)
 
         self.verticalLayout_16.setStretch(0, 3)
-        self.verticalLayout_16.setStretch(1, 2)
         self.tabWidget.addTab(self.tab_general_config, "")
         self.tab_PID_controller = QWidget()
         self.tab_PID_controller.setObjectName(u"tab_PID_controller")
@@ -504,17 +504,17 @@ class Ui_MainWindow(object):
         self.lineEdit_ct_td = QLineEdit(self.groupBox_ct_td)
         self.lineEdit_ct_td.setObjectName(u"lineEdit_ct_td")
         self.lineEdit_ct_td.setGeometry(QRect(100, 40, 151, 21))
-        self.groupBox_7 = QGroupBox(self.tab_PID_controller)
-        self.groupBox_7.setObjectName(u"groupBox_7")
-        self.groupBox_7.setGeometry(QRect(50, 130, 371, 91))
-        self.groupBox_7.setCheckable(False)
-        self.label_24 = QLabel(self.groupBox_7)
+        self.groupBox_ct_kp = QGroupBox(self.tab_PID_controller)
+        self.groupBox_ct_kp.setObjectName(u"groupBox_ct_kp")
+        self.groupBox_ct_kp.setGeometry(QRect(50, 130, 371, 91))
+        self.groupBox_ct_kp.setCheckable(False)
+        self.label_24 = QLabel(self.groupBox_ct_kp)
         self.label_24.setObjectName(u"label_24")
         self.label_24.setGeometry(QRect(10, 20, 31, 21))
-        self.lineEdit_ct_kp = QLineEdit(self.groupBox_7)
+        self.lineEdit_ct_kp = QLineEdit(self.groupBox_ct_kp)
         self.lineEdit_ct_kp.setObjectName(u"lineEdit_ct_kp")
         self.lineEdit_ct_kp.setGeometry(QRect(40, 20, 121, 21))
-        self.label_22 = QLabel(self.groupBox_7)
+        self.label_22 = QLabel(self.groupBox_ct_kp)
         self.label_22.setObjectName(u"label_22")
         self.label_22.setGeometry(QRect(10, 40, 351, 41))
         self.tabWidget.addTab(self.tab_PID_controller, "")
@@ -923,7 +923,7 @@ class Ui_MainWindow(object):
         self.groupBox_ct_td.setTitle(QCoreApplication.translate("MainWindow", u"A\u00e7\u00e3o Derivativa (pode ser desabilitada)", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"Td, em [seg] :", None))
         self.lineEdit_ct_td.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.groupBox_7.setTitle(QCoreApplication.translate("MainWindow", u"A\u00e7\u00e3o Proporcional", None))
+        self.groupBox_ct_kp.setTitle(QCoreApplication.translate("MainWindow", u"A\u00e7\u00e3o Proporcional", None))
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"Kp :", None))
         self.lineEdit_ct_kp.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"Ex.: Kp = 2 indica que, supondo apenas a\u00e7\u00e3o proporcional,\n"

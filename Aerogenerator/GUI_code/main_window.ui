@@ -704,7 +704,7 @@ com o Sistema</string>
            <attribute name="title">
             <string>Configurações Gerais</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_16" stretch="3,2">
+           <layout class="QVBoxLayout" name="verticalLayout_16" stretch="3,0">
             <item>
              <widget class="QGroupBox" name="groupBox_controller_choice">
               <property name="title">
@@ -889,11 +889,11 @@ com o Sistema</string>
                <bool>true</bool>
               </property>
               <property name="checked">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <widget class="QLabel" name="label_12">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="geometry">
                 <rect>
@@ -926,7 +926,7 @@ com o Sistema</string>
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_19">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Cp :</string>
@@ -936,20 +936,20 @@ com o Sistema</string>
                 <item row="0" column="1">
                  <widget class="QSpinBox" name="spinBox_Cp">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="maximum">
                    <number>255</number>
                   </property>
                   <property name="value">
-                   <number>144</number>
+                   <number>152</number>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_20">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Cn :</string>
@@ -959,7 +959,7 @@ com o Sistema</string>
                 <item row="1" column="1">
                  <widget class="QSpinBox" name="spinBox_Cn">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimum">
                    <number>-255</number>
@@ -968,13 +968,16 @@ com o Sistema</string>
                    <number>0</number>
                   </property>
                   <property name="value">
-                   <number>-139</number>
+                   <number>0</number>
                   </property>
                  </widget>
                 </item>
                </layout>
               </widget>
               <widget class="QLabel" name="label_26">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="geometry">
                 <rect>
                  <x>450</x>
@@ -1115,7 +1118,7 @@ com o Sistema</string>
              </property>
             </widget>
            </widget>
-           <widget class="QGroupBox" name="groupBox_7">
+           <widget class="QGroupBox" name="groupBox_ct_kp">
             <property name="geometry">
              <rect>
               <x>50</x>
