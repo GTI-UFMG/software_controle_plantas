@@ -1,10 +1,22 @@
 from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont
+
+# Time series graphing library for PyQt/PySide.
+from click import command
 import pyqtgraph as pg
 
+# To find the path of the current script file.
 import os.path
+
+# To run external commands in the OS shell.
+import subprocess
 
 # The GUI designed in the Qt Designer application.
 from main_window import Ui_MainWindow
+
+# The Dialog window designed in the Qt Designer application.
+from ESP32_code_dialog import Ui_Dialog_ESP32Code
 
 # Array of data for the charts.
 import numpy as np
@@ -22,11 +34,195 @@ _test_comm_response_max_attempts = 5
 # Decimation rate for the data in the charts:
 _plot_decim_rate = 1
 
+# Syntaxe highlighting for the controller code editor.
+class CPlusPlusHighlighter(QSyntaxHighlighter):
+    def __init__(self, document):
+        super().__init__(document)
+        self.rules = []
+
+        # Color Formats
+        keyword_format = QTextCharFormat()
+        keyword_format.setForeground(QColor("#569CD6"))  # Blue
+        keyword_format.setFontWeight(QFont.Bold)
+
+        type_format = QTextCharFormat()
+        type_format.setForeground(QColor("#4EC9B0"))  # Teal
+
+        self.comment_format = QTextCharFormat()
+        self.comment_format.setForeground(QColor("#6A9955"))  # Green
+        self.comment_format.setFontItalic(True)
+
+        string_format = QTextCharFormat()
+        string_format.setForeground(QColor("#CE9178"))  # Orange
+        
+        special_vars_format = QTextCharFormat()
+        special_vars_format.setForeground(QColor("#F8FC00"))  # Yellow
+        # special_vars_format.setFontWeight(QFont.Bold)
+
+        # 1. Keywords
+        keywords = [
+            "class", "const", "enum", "explicit", "export", "friend", "inline",
+            "namespace", "operator", "private", "protected", "public", "signals",
+            "slots", "template", "typename", "using", "virtual", "volatile",
+            "return", "if", "else", "switch", "case", "break", "while", "for", "do"
+        ]
+        for word in keywords:
+            pattern = QRegularExpression(f"\\b{word}\\b")
+            self.rules.append((pattern, keyword_format))
+
+        # 2. Types
+        types = ["char", "double", "float", "int", "long", "short", "signed", "unsigned", "void", "bool"]
+        for t in types:
+            pattern = QRegularExpression(f"\\b{t}\\b")
+            self.rules.append((pattern, type_format))
+
+        # 3. Single-line comments & Strings
+        self.rules.append((QRegularExpression("//[^\n]*"), self.comment_format))
+        self.rules.append((QRegularExpression("\".*?\""), string_format))
+
+        # 4. Multi-line comment expressions
+        self.comment_start_expression = QRegularExpression(r"/\*")
+        self.comment_end_expression = QRegularExpression(r"\*/")
+        
+        # 5. Special variables
+        special_vars = ["t","ctrl_last_t", "ref", "xc", "ym", "u"]
+        for var in special_vars:
+            pattern = QRegularExpression(f"\\b{var}\\b")
+            self.rules.append((pattern, special_vars_format))
+
+    def highlightBlock(self, text):
+        # Apply standard single-line rules first
+        for pattern, fmt in self.rules:
+            match_iterator = pattern.globalMatch(text)
+            while match_iterator.hasNext():
+                match = match_iterator.next()
+                self.setFormat(match.capturedStart(), match.capturedLength(), fmt)
+
+        # Handle multi-line comments
+        self.setCurrentBlockState(0)
+        start_index = 0
+        
+        # Check if the previous line ended inside a comment
+        if self.previousBlockState() == 1:
+            start_index = 0
+        else:
+            match = self.comment_start_expression.match(text)
+            start_index = match.capturedStart() if match.hasMatch() else -1
+
+        # Process the current line
+        while start_index >= 0:
+            end_match = self.comment_end_expression.match(text, start_index)
+            end_index = end_match.capturedStart() if end_match.hasMatch() else -1
+            comment_length = 0
+
+            if end_index == -1:
+                # Comment does not end on this line
+                self.setCurrentBlockState(1)
+                comment_length = len(text) - start_index
+            else:
+                # Comment ends on this line
+                comment_length = end_index - start_index + end_match.capturedLength()
+
+            self.setFormat(start_index, comment_length, self.comment_format)
+            
+            # Look for the next comment start if this one ended
+            if end_index != -1:
+                start_match = self.comment_start_expression.match(text, start_index + comment_length)
+                start_index = start_match.capturedStart() if start_match.hasMatch() else -1
+            else:
+                start_index = -1
+
+class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
+    
+    def __init__(self,comm_agent):
+        super().__init__()
+        self.setupUi(self)
+        
+        # Register the communication agent object.
+        if not isinstance(comm_agent,CommunicationAgent):
+            raise TypeError("The comm_agent argument must be an instance of the CommunicationAgent class.")           
+        self.comm_agent = comm_agent   
+        
+        self.buttonBox_ok_cancel.setEnabled(False)
+        
+        self.plainTextEdit_message_compilation.setStyleSheet("background-color: #FFFFFF; color: #000000; font-family: Ubuntu; font-size: 12pt;") 
+        self.plainTextEdit_message_upload.setStyleSheet("background-color: #FFFFFF; color: #000000; font-family: Ubuntu; font-size: 12pt;")
+        self.label_compilation_status.setText("Compilação do código para o ESP32 ainda não foi realizada.")
+        self.label_compilation_status.setStyleSheet("color: gray;")
+        self.label_upload_status.setText("Upload do código para o ESP32 ainda não foi realizado.")
+        self.label_upload_status.setStyleSheet("color: gray;")
+        
+        update_timer = QtCore.QTimer(self)
+        update_timer.setSingleShot(True)
+        update_timer.timeout.connect(self.send_code_to_ESP32)
+        update_timer.start(500)
+        
+    def send_code_to_ESP32(self):        
+        
+        self.plainTextEdit_message_compilation.setPlainText("Compilando o código para o ESP32...\n")           
+        
+        # Force redraw of the GUI to show the compilation message before proceeding to compile the code for the ESP32.
+        QtCore.QCoreApplication.processEvents()
+                
+        command = "arduino-cli compile " + os.getcwd() + os.sep + "Aerogenerator_embedded_code" + os.sep + "Aerogenerator_embedded_code.ino --fqbn esp32:esp32:esp32da"
+        self.plainTextEdit_message_compilation.appendPlainText(command)
+        
+        result = subprocess.run(command,capture_output=True,text=True)
+        
+        if result.returncode == 1:
+            # The command failed, so we display the error message in red.
+            self.plainTextEdit_message_compilation.appendPlainText(result.stderr)
+            self.plainTextEdit_message_compilation.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
+            self.label_compilation_status.setText("Falha na compilação do código para o ESP32.")
+            self.label_compilation_status.setStyleSheet("color: red;")
+            return False
+        else:
+            # The command succeeded, so we display the output message in green.
+            self.plainTextEdit_message_compilation.appendPlainText(result.stdout)
+            self.plainTextEdit_message_compilation.setStyleSheet("background-color: #99FF99; color: #000000; font-family: Ubuntu; font-size: 10pt;")
+            self.label_compilation_status.setText("Código compilado com sucesso para o ESP32.")
+            self.label_compilation_status.setStyleSheet("color: green;")
+            
+        # Force redraw of the GUI to show the compilation results before proceeding to upload the code to the ESP32.
+        QtCore.QCoreApplication.processEvents()
+        
+        # Close the serial port before uploading the code to the ESP32.
+        self.comm_agent.pause_communications()
+            
+        self.plainTextEdit_message_upload.setPlainText("Enviando o código para o ESP32...\n")           
+        
+        # Force redraw of the GUI to show the upload message before proceeding to upload the code to the ESP32.
+        QtCore.QCoreApplication.processEvents()
+        
+        command = "arduino-cli upload -p " + self.comm_agent.get_serial_portname() + " " + os.getcwd() + os.sep + "Aerogenerator_embedded_code" + os.sep + "Aerogenerator_embedded_code.ino --fqbn esp32:esp32:esp32da"
+        self.plainTextEdit_message_upload.appendPlainText(command)
+        
+        result = subprocess.run(command,capture_output=True,text=True)
+            
+        if result.returncode == 1:
+            # The command failed, so we display the error message in red.
+            self.plainTextEdit_message_upload.appendPlainText(result.stderr)
+            self.plainTextEdit_message_upload.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
+            self.label_upload_status.setText("Falha ao enviar o código para o ESP32.")
+            self.label_upload_status.setStyleSheet("color: red;")
+            return False
+        else:
+            # The command succeeded, so we display the output message in green.
+            self.plainTextEdit_message_upload.appendPlainText(result.stdout)
+            self.plainTextEdit_message_upload.setStyleSheet("background-color: #99FF99; color: #000000; font-family: Ubuntu; font-size: 10pt;")
+            self.label_upload_status.setText("Código enviado com sucesso para o ESP32.")
+            self.label_upload_status.setStyleSheet("color: green;")
+            
+        # Reopen the serial port after uploading the code to the ESP32.
+        self.comm_agent.resume_communications()
+        
+        self.buttonBox_ok_cancel.setEnabled(True)
+
 # Graphical User Interface class where function callbacks are defined 
 # and specific settings are done.
 class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
-    def __init__(self,comm_agent,charts_update_time_ms=_charts_update_time_ms,plot_decim_rate=_plot_decim_rate):
+    def __init__(self,comm_agent,charts_update_time_ms=_charts_update_time_ms,plot_decim_rate=_plot_decim_rate) -> None:
         super().__init__()
         self.setupUi(self)
         
@@ -53,9 +249,6 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.reference_input = "manual"
         self.radioButton_manual.setChecked(True)
-
-        # No dead-zone compensation.
-        self.groupBox_deadzone_comp.setChecked(False)
         
         # For the custom controller, select an open-loop strategy.
         self.comboBox_ctrl_code.setCurrentIndex(0)
@@ -74,6 +267,10 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Initially, the manual input is zero.
         self.lineEdit_manual_input.setText("0")
         
+        # Initialize the PlainTextEdit_ctrl_code area with a syntax highlighter for C++ code.
+        self.plainTextEdit_ctrl_code.setStyleSheet("background-color: #444; color: #D4D4D4; font-family: Ubuntu; font-size: 14pt;")
+        self.highlighter = CPlusPlusHighlighter(self.plainTextEdit_ctrl_code.document())
+
         # This is the manual way of connecting signals and slots.
         # Actions
         self.pushButton_start.clicked.connect(self.start_experiment)
@@ -333,6 +530,10 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.comm_agent.send_command(cmd_messages['set_ctrl_sys_param'],cmd_val1=ctrl_sys_params['ctrl_sys_param_ti'],cmd_val2=ti)
                 self.comm_agent.send_command(cmd_messages['set_ctrl_sys_param'],cmd_val1=ctrl_sys_params['ctrl_sys_param_td'],cmd_val2=td)
                 self.comm_agent.send_command(cmd_messages['set_ctrl_code'],cmd_val1=ctrl_code['ctrl_pid_ct'])
+            
+            if self.radioButton_generic.isChecked():
+                self.plainTextEdit_message_area.appendPlainText("Estratégia de Controle escolhida: Controlador Genérico (escrito em C++).")    
+                self.comm_agent.send_command(cmd_messages['set_ctrl_code'],cmd_val1=ctrl_code['ctrl_custom'])
         
     def send_cmd_manual_input_change(self):
 
@@ -404,6 +605,85 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     msgBox.setModal(True)
                     msgBox.showMessage("Dados não foram salvos... :-(")
 
+    def load_ctrl_code_file(self):
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setWindowTitle("Escolha o arquivo de código do controlador:")
+        dialog.setFileMode(QtWidgets.QFileDialog.FileMode.AnyFile)
+        dialog.setViewMode(QtWidgets.QFileDialog.ViewMode.Detail)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptOpen)
+        dialog.setNameFilters({"Arquivos de código C++ (*.cpp *.h *.txt)","All files (*)"})
+        if (dialog.exec()):
+            filename = dialog.selectedFiles()
+            filename = filename[0]
+            
+            try:
+                with open(filename,'r') as ctrl_code_file:
+                    try:
+                        ctrl_code_text = ctrl_code_file.read()
+                        self.plainTextEdit_ctrl_code.setPlainText(ctrl_code_text)
+                        self.label_ctrl_code_file_status.setText("Arquivo Carregado: " + os.path.basename(filename))
+                        self.label_ctrl_code_file_status.setStyleSheet("color: orange;")
+                    except:
+                        msgBox = QtWidgets.QErrorMessage(self)
+                        msgBox.setModal(True)
+                        msgBox.showMessage("Falha ao ler o arquivo de código do controlador.")
+            except:
+                msgBox = QtWidgets.QErrorMessage(self)
+                msgBox.setModal(True)
+                msgBox.showMessage("Falha ao abrir o arquivo de código do controlador.")
+
+    def save_ctrl_code_to_file(self):
+        
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setWindowTitle("Escolha o arquivo de destino para salvar o código do controlador:")
+        dialog.setFileMode(QtWidgets.QFileDialog.FileMode.AnyFile)
+        dialog.setViewMode(QtWidgets.QFileDialog.ViewMode.Detail)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptSave)
+        dialog.setNameFilters({"Arquivos de código C++ (*.cpp *.h *.txt)","All files (*)"})
+        dialog.setDefaultSuffix(".cpp")
+        if (dialog.exec()):
+            filename = dialog.selectedFiles()
+            filename = filename[0]
+            
+            try:
+                with open(filename,'w') as ctrl_code_file:
+                    try:
+                        ctrl_code_text = self.plainTextEdit_ctrl_code.toPlainText()
+                        ctrl_code_file.write(ctrl_code_text)
+                        self.label_ctrl_code_file_status.setText("Arquivo Salvo: " + os.path.basename(filename))
+                        self.label_ctrl_code_file_status.setStyleSheet("color: green;")
+                    except:
+                        msgBox = QtWidgets.QErrorMessage(self)
+                        msgBox.setModal(True)
+                        msgBox.showMessage("Falha ao escrever no arquivo de código do controlador.")
+            except:
+                msgBox = QtWidgets.QErrorMessage(self)
+                msgBox.setModal(True)
+                msgBox.showMessage("Falha ao abrir o arquivo de código do controlador para escrita.")
+
+    def send_code_to_ESP32(self):
+            # Save the code from the PlainTextEdit_ctrl_code to a temporary file.
+            filename = os.path.join(os.getcwd(), "Aerogenerator_embedded_code", "control_strategy.txt")
+            try:
+                with open(filename, 'w') as ctrl_code_file:
+                    ctrl_code_text = self.plainTextEdit_ctrl_code.toPlainText()
+                    ctrl_code_file.write(ctrl_code_text)
+            except:
+                msgBox = QtWidgets.QErrorMessage(self)
+                msgBox.setModal(True)
+                msgBox.showMessage("Falha ao salvar o código do controlador para o arquivo \"control_strategy.txt\".")
+                return False
+
+            dialog = Dialog_ESP32Code(self.comm_agent)
+            if dialog.exec() == 1:
+                self.label_ctrl_code_ESP32_status.setText("Código enviado com sucesso para o ESP32.")
+                self.label_ctrl_code_ESP32_status.setStyleSheet("color: green;")
+                return True
+            else:
+                self.label_ctrl_code_ESP32_status.setText("Falha ao enviar o código para o ESP32.")
+                self.label_ctrl_code_ESP32_status.setStyleSheet("color: red;")
+                return False
+    
     def update_plots(self):
     
         # Get the current data count.
@@ -460,7 +740,6 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if (xmax <= tmin + tspan):
             self.widget_plot_1.setXRange(tmin,self.x_data1[-1],padding=0)
             self.widget_plot_2.setXRange(tmin,self.x_data1[-1],padding=0)
-
 
     # Slots for the widgets signals in the manual input 
     # group (slider, push button, and line edit):
@@ -550,6 +829,20 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 "\tapropriados na aba \"PID em 's' \".\n"
             )
             self.textEdit_control_info.setPlainText(txtmessage)
+            self.test_type = "closed loop"
+    
+    @QtCore.Slot()
+    def on_radioButton_generic_toggled(self):
+        if self.radioButton_generic.isChecked():           
+            txtmessage = (
+                "Controle genérico selecionado.\n"
+                "Neste modo de operação, o sistema utiliza um controlador implementado em C++.\n"
+                "O código do controlador pode ser editado diretamente na aba \"Genérico\".\n"
+                "Você também pode carregar um arquivo de código existente ou salvar o código atual em um arquivo.\n"
+                "Para enviar o código para o ESP32, clique no botão \"Enviar Código para ESP32\"."
+            )
+            self.textEdit_control_info.setPlainText(txtmessage)
+            self.test_type = "closed loop"
     
     @QtCore.Slot()
     def on_pushButton_ctrl_code_released(self):
@@ -562,14 +855,19 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             case "PI":
                 filename = "template_PI_controller.txt"
 
-        filename = os.path.abspath(os.path.curdir) + os.path.sep + "ctrl_templates" + os.path.sep + filename
-        with open(filename,'r') as ctrl_code_file:
-            try:
-                ctrl_code_text = ctrl_code_file.read()
-            except:
-                ctrl_code_text = "// Não consegui carregar o código..."
-
+        filename = os.path.abspath(os.path.curdir) + os.path.sep + "GUI_code\\ctrl_templates" + os.path.sep + filename
+        try:
+            with open(filename,'r') as ctrl_code_file:
+                try:
+                    ctrl_code_text = ctrl_code_file.read()
+                except:
+                    ctrl_code_text = "// Não consegui carregar o código..."
+        except FileNotFoundError:
+            ctrl_code_text = f"// Arquivo \"{filename}\" não encontrado..."
+            
         self.plainTextEdit_ctrl_code.setPlainText(ctrl_code_text)
+        self.label_ctrl_code_file_status.setText("Template Carregado: " + os.path.basename(filename))
+        self.label_ctrl_code_file_status.setStyleSheet("color: blue;")
 
     @QtCore.Slot()
     def on_pushButton_send_code_ESP32_released(self):
@@ -622,9 +920,34 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lineEdit_ct_ti.setText(str(ti))
         
     @QtCore.Slot()
-    def on_lineEdit_ct_td_returnPressed(self):
+    def on_lineEdit_ct_td_returnPressed(self) -> None:
         td,_ = self.process_value_from_text(self.lineEdit_ct_td.displayText())    
         td = abs(td)
         self.lineEdit_ct_kp.setText(str(td))
     
-    
+    @QtCore.Slot()
+    def on_pushButton_load_ctrl_code_file_released(self) -> None:
+        self.load_ctrl_code_file()
+        
+    @QtCore.Slot()
+    def on_pushButton_save_ctrl_code_file_released(self) -> None:
+        self.save_ctrl_code_to_file()
+        
+    @QtCore.Slot()
+    def on_plainTextEdit_ctrl_code_textChanged(self) -> None:
+        self.label_ctrl_code_file_status.setText("Código do controlador modificado. Lembre-se de salvar!")
+        self.label_ctrl_code_file_status.setStyleSheet("color: red;")
+        self.label_ctrl_code_ESP32_status.setText("Código do controlador foi modificado. Ainda não enviado para o ESP32.")
+        self.label_ctrl_code_ESP32_status.setStyleSheet("color: red;")        
+        
+    @QtCore.Slot()
+    def on_pushButton_send_code_ESP32_released(self) -> None:
+        if (self.send_code_to_ESP32()):
+            self.label_ctrl_code_ESP32_status.setText("Código do controlador enviado para o ESP32.")
+            self.label_ctrl_code_ESP32_status.setStyleSheet("color: blue;")
+        else:
+            self.label_ctrl_code_ESP32_status.setText("Falha ao enviar o código do controlador para o ESP32.")
+            self.label_ctrl_code_ESP32_status.setStyleSheet("color: red;")
+            
+            
+        

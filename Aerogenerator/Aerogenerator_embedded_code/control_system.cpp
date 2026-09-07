@@ -224,6 +224,10 @@ int ControlSystem::run_controller_code(float t)
       return ctrl_pid_ct(t);
     break;
 
+    case CTRL_CUSTOM:
+      return custom_ctrl_code(t);
+    break;
+
     default: // Do nothing.
       u[0] = 0.0;
       return 1;
@@ -235,5 +239,8 @@ int ControlSystem::run_controller_code(float t)
 /////////////////////////////////////////////////////////////////////
 /// Include code specific to the Hardware Platform we are using. ////
 /////////////////////////////////////////////////////////////////////
-// This will also include the code for "generic controllers".
 #include "Aerogenerator.h"
+
+// This will also include the code for "generic controllers".
+#include "control_strategy.h"
+

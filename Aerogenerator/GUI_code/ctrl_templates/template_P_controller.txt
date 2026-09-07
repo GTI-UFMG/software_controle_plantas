@@ -13,7 +13,6 @@
 //                  ym[0] = posicao em [graus].
 //                  ym[1] = velocidade angular [graus/s].
 //
-//
 //   ref         -> vetor de sinais de referencia: ref[0].
 //
 //   u           -> vetor de sinais de entrada da planta u[0].

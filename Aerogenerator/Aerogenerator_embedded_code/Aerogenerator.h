@@ -114,6 +114,3 @@ void ControlSystem::measure_signals(float t) {
   ym[2] = 0.0f;
   ym[3] = 0.0f;
 }
-
-// The next line will include the actual control law.
-#include "control_strategy.h"

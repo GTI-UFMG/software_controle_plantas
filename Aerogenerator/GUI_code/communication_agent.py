@@ -255,11 +255,24 @@ class CommunicationAgent:
 
     def stop(self):
         # Thread termination actions.
-        if self.comm_state == 'comm_ok':
-            self.serialPort.close()
-            with self.comm_lock:
+        with self.comm_lock:
+            if self.comm_state == 'comm_ok':
+                self.serialPort.close()
                 self.comm_state = 'comm_not_ok'            
-            print("Serial port closed.\n")
+                print("Serial port closed.\n")
+                
+    def pause_communications(self):
+            # Necessary to close the serial port before uploading code to the ESP32.
+            with self.comm_lock:
+                self.comm_state = 'comm_pause'
+                self.serialPort.close()    
+                print("Serial port temporally closed.\n")
+                    
+    def resume_communications(self):
+            # Necessary to reopen the serial port after uploading code to the ESP32.
+            with self.comm_lock:
+                if self.comm_state == 'comm_pause':
+                    self.comm_state = 'comm_not_ok' # Force to try to open the port again.  
             
     def comm_loop(self):
 
@@ -291,6 +304,10 @@ class CommunicationAgent:
                     ## retrieving them from the command queue:
                     ##########################
                     self.send_message_to_serial()
+                    
+                case 'comm_pause':
+                    # Do nothing, just wait for the serial port to be closed by the GUI thread.
+                    pass
                     
             # Sleep for a while to avoid overloading the CPU.
             time.sleep(_comm_handler_ts)

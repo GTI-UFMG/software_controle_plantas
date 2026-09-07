@@ -1,0 +1,2 @@
+arduino-cli compile --fqbn esp32:esp32:esp32da Aerogenerator_embedded_code.ino 
+arduino-cli upload -p COM6 --fqbn esp32:esp32:esp32da Aerogenerator_embedded_code.ino

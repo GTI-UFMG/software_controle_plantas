@@ -1202,7 +1202,7 @@ PWM = 2, quando erro = 1 [deg] (ou 1 [deg/s]).</string>
                 <property name="font">
                  <font>
                   <family>Ubuntu</family>
-                  <pointsize>12</pointsize>
+                  <pointsize>14</pointsize>
                   <italic>false</italic>
                   <kerning>true</kerning>
                   <fontweight>Medium</fontweight>
@@ -1212,8 +1212,8 @@ PWM = 2, quando erro = 1 [deg] (ou 1 [deg/s]).</string>
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">font: 500 12pt &quot;Ubuntu&quot;;
-background-color: rgb(237, 251, 255);</string>
+                 <string notr="true">font: 500 14pt &quot;Ubuntu&quot;;
+background-color: rgb(104, 104, 104);</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::Shape::WinPanel</enum>
@@ -1228,37 +1228,35 @@ background-color: rgb(237, 251, 255);</string>
                  <number>0</number>
                 </property>
                 <property name="plainText">
-                 <string>///////////////////////////////////////////////////////////////////
-// Implemente o calculo da acao de controle aqui.
-//
-// Variaveis que voce pode usar (jah estao disponiveis):
-//
-//   t           -&gt; tempo [s]
-//   ctrl_last_t -&gt; ultimo instante de tempo em que o
-//                  codigo do controlador foi executado [s].
-//                  Obs.: (t - ctrl_last_t) deve ser bem proximo
-//                  do intervalo de controle = 10ms.
-//
-//   ym          -&gt; vetor de sinais medidos: ym[0] a ym[3]:
-//                  ym[0] = posicao em [graus].
-//                  ym[1] = velocidade angular [graus/s].
-//
-//
-//   ref         -&gt; vetor de sinais de referencia: ref[0].
-//
-//   u           -&gt; vetor de sinais de entrada da planta u[0].
-//
-//   xc          -&gt; vetor de estados do controlador
-//                  (inicializados com valor zero): xc[0] a xc[5].
-//                  Use para implementar um controlador
-//                  dinamico, ao inves de um estatico.
-
-// Ensaio em malha aberta: envia o valor de comando PWM,
-// alterado via interface grafica, diretamente para o motor BLDC NIDEC.
-
-// Aplica o valor diretamente na entrada do sistema
-u[0] = ref[0];
-</string>
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_ctrl_code_file_status">
+                <property name="font">
+                 <font>
+                  <family>Ubuntu</family>
+                  <pointsize>10</pointsize>
+                  <italic>false</italic>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Código Inicial.</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_ctrl_code_ESP32_status">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 0, 0);</string>
+                </property>
+                <property name="text">
+                 <string>Código Não Enviado para o ESP32.</string>
                 </property>
                </widget>
               </item>
@@ -1268,18 +1266,58 @@ u[0] = ref[0];
                  <enum>Qt::Orientation::Vertical</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::Policy::Preferred</enum>
+                 <enum>QSizePolicy::Policy::Minimum</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>818</width>
-                  <height>68</height>
+                  <height>15</height>
                  </size>
                 </property>
                </spacer>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QPushButton" name="pushButton_load_ctrl_code_file">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 194, 52);</string>
+                    </property>
+                    <property name="text">
+                     <string>Carregar Arquivo...</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pushButton_save_ctrl_code_file">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(128, 238, 104);</string>
+                    </property>
+                    <property name="text">
+                     <string>Salvar Arquivo...</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Policy::Maximum</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_10">
                   <item>
@@ -1342,16 +1380,16 @@ u[0] = ref[0];
                  </layout>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer">
+                 <spacer name="horizontalSpacer_4">
                   <property name="orientation">
                    <enum>Qt::Orientation::Horizontal</enum>
                   </property>
                   <property name="sizeType">
-                   <enum>QSizePolicy::Policy::Preferred</enum>
+                   <enum>QSizePolicy::Policy::Maximum</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>40</width>
+                    <width>100</width>
                     <height>20</height>
                    </size>
                   </property>
@@ -1745,6 +1783,9 @@ border-color: rgb(85, 0, 255);</string>
                  <height>40</height>
                 </size>
                </property>
+               <property name="toolTip">
+                <string>Clique aqui para salvar os dados como um arquivo de texto CSV.</string>
+               </property>
                <property name="styleSheet">
                 <string notr="true">background-color: rgb(254, 255, 196);
 disabled {background-color: rgb(50,50,50)};</string>
@@ -1771,6 +1812,9 @@ disabled {background-color: rgb(50,50,50)};</string>
               <widget class="QLCDNumber" name="lcdNumber_dados_coletados">
                <property name="enabled">
                 <bool>true</bool>
+               </property>
+               <property name="toolTip">
+                <string>Número de pontos coletados.</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Shape::Box</enum>

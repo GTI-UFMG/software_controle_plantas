@@ -22,7 +22,8 @@ if __name__ == "__main__":
     
     # Setup the GUI (in the main thread).
     myGUI_app = QtWidgets.QApplication(sys.argv)
-    #      In Python, objects from custom classes are passed by reference.
+    
+    # In Python, objects from custom classes are passed by reference.
     window = GUIWindow(comm_agent)
     window.show()
     
