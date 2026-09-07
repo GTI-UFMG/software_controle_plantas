@@ -164,7 +164,7 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
         # Force redraw of the GUI to show the compilation message before proceeding to compile the code for the ESP32.
         QtCore.QCoreApplication.processEvents()
                 
-        command = "arduino-cli compile " + os.getcwd() + os.sep + "Aerogenerator_embedded_code" + os.sep + "Aerogenerator_embedded_code.ino --fqbn esp32:esp32:esp32da"
+        command = "arduino-cli compile " + os.path.join(os.path.dirname(__file__),"..","Aerogenerator_embedded_code", "Aerogenerator_embedded_code.ino") + " --fqbn esp32:esp32:esp32da"
         self.plainTextEdit_message_compilation.appendPlainText(command)
         
         result = subprocess.run(command,capture_output=True,text=True)
@@ -194,7 +194,7 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
         # Force redraw of the GUI to show the upload message before proceeding to upload the code to the ESP32.
         QtCore.QCoreApplication.processEvents()
         
-        command = "arduino-cli upload -p " + self.comm_agent.get_serial_portname() + " " + os.getcwd() + os.sep + "Aerogenerator_embedded_code" + os.sep + "Aerogenerator_embedded_code.ino --fqbn esp32:esp32:esp32da"
+        command = "arduino-cli upload -p " + self.comm_agent.get_serial_portname() + " " + os.path.join(os.path.dirname(__file__), "..", "Aerogenerator_embedded_code", "Aerogenerator_embedded_code.ino") + " --fqbn esp32:esp32:esp32da"
         self.plainTextEdit_message_upload.appendPlainText(command)
         
         result = subprocess.run(command,capture_output=True,text=True)
@@ -663,7 +663,8 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def send_code_to_ESP32(self):
             # Save the code from the PlainTextEdit_ctrl_code to a temporary file.
-            filename = os.path.join(os.getcwd(), "Aerogenerator_embedded_code", "control_strategy.txt")
+            filename = os.path.join(os.path.dirname(__file__),"..","Aerogenerator_embedded_code", "control_strategy.txt")
+            print(filename)
             try:
                 with open(filename, 'w') as ctrl_code_file:
                     ctrl_code_text = self.plainTextEdit_ctrl_code.toPlainText()
@@ -855,7 +856,7 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             case "PI":
                 filename = "template_PI_controller.txt"
 
-        filename = os.path.abspath(os.path.curdir) + os.path.sep + "GUI_code\\ctrl_templates" + os.path.sep + filename
+        filename = os.path.dirname(__file__) + os.path.sep + "ctrl_templates" + os.path.sep + filename
         try:
             with open(filename,'r') as ctrl_code_file:
                 try:

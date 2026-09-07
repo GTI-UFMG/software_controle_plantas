@@ -22,35 +22,9 @@
 //                  Use para implementar um controlador
 //                  dinamico, ao inves de um estatico.
 
-// Controlador: PI
+// Ensaio em malha aberta: envia o valor de comando PWM,
+// alterado via interface grafica, diretamente para o motor DC.
 
-// Erro [graus]:
-float e;
-
-// Intervalo amostragem para controle (10ms):
-const float Ts = 10.0e-3;
-
-// Ganho proporcional em [unidades PWM/grau]:
-const float kp = 1.5f;
-
-// Tempo integral em [s]:
-const float Ti = 10.0f;
-
-// Ensaio em malha fechada: usa o valor de comando PWM,
-// alterado via interface grafica, como sinal de referencia
-// em [graus]:
-ref[0] = RefSteps.get(t);
-
-// Calculo do erro:
-e = ref[0] - ym[0];
-
-// Calculo da acao de controle.
-// Note que uma variavel de estado interna do controlador
-// serah usada para armazenar a integral do erro, calculada
-// usando a regra de Euler. Voce pode implementar
-// estrategias que contam com ateh 6 variaveis de estado:
-
-u[0] = kp*(e + 1/Ti*xc[0]);
-xc[0] = xc[0] + Ts*e;
-
+// Aplica o valor diretamente na entrada do sistema
+u[0] = ref[0];
 
