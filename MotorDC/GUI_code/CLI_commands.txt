@@ -1,0 +1,2 @@
+arduino-cli compile --fqbn esp32:esp32:esp32da EMBEDDED_CODE.ino 
+arduino-cli upload -p SERIAL_PORT_ESP32 --fqbn esp32:esp32:esp32da EMBEDDED_CODE.ino

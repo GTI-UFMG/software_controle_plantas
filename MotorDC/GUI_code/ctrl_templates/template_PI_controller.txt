@@ -7,12 +7,11 @@
 //   ctrl_last_t -> ultimo instante de tempo em que o
 //                  codigo do controlador foi executado [s].
 //                  Obs.: (t - ctrl_last_t) deve ser bem proximo
-//                  do intervalo de controle = 10ms.
+//                  do intervalo de amostragem para controle.
 //
 //   ym          -> vetor de sinais medidos: ym[0] a ym[3]:
 //                  ym[0] = posicao em [graus].
 //                  ym[1] = velocidade angular [graus/s].
-//
 //
 //   ref         -> vetor de sinais de referencia: ref[0].
 //

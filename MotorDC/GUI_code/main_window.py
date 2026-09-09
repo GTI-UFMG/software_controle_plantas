@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowwXzQvn.ui'
+## Form generated from reading UI file 'main_windoweNbsqu.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.2
 ##
@@ -465,6 +465,7 @@ class Ui_MainWindow(object):
 
         self.label_26 = QLabel(self.groupBox_deadzone_comp)
         self.label_26.setObjectName(u"label_26")
+        self.label_26.setEnabled(True)
         self.label_26.setGeometry(QRect(450, 30, 191, 151))
         self.label_26.setTextFormat(Qt.TextFormat.AutoText)
         self.label_26.setWordWrap(True)
@@ -472,7 +473,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.addWidget(self.groupBox_deadzone_comp)
 
         self.verticalLayout_16.setStretch(0, 3)
-        self.verticalLayout_16.setStretch(1, 2)
         self.tabWidget.addTab(self.tab_general_config, "")
         self.tab_PID_controller = QWidget()
         self.tab_PID_controller.setObjectName(u"tab_PID_controller")
@@ -504,17 +504,17 @@ class Ui_MainWindow(object):
         self.lineEdit_ct_td = QLineEdit(self.groupBox_ct_td)
         self.lineEdit_ct_td.setObjectName(u"lineEdit_ct_td")
         self.lineEdit_ct_td.setGeometry(QRect(100, 40, 151, 21))
-        self.groupBox_7 = QGroupBox(self.tab_PID_controller)
-        self.groupBox_7.setObjectName(u"groupBox_7")
-        self.groupBox_7.setGeometry(QRect(50, 130, 371, 91))
-        self.groupBox_7.setCheckable(False)
-        self.label_24 = QLabel(self.groupBox_7)
+        self.groupBox_ct_kp = QGroupBox(self.tab_PID_controller)
+        self.groupBox_ct_kp.setObjectName(u"groupBox_ct_kp")
+        self.groupBox_ct_kp.setGeometry(QRect(50, 130, 371, 91))
+        self.groupBox_ct_kp.setCheckable(False)
+        self.label_24 = QLabel(self.groupBox_ct_kp)
         self.label_24.setObjectName(u"label_24")
         self.label_24.setGeometry(QRect(10, 20, 31, 21))
-        self.lineEdit_ct_kp = QLineEdit(self.groupBox_7)
+        self.lineEdit_ct_kp = QLineEdit(self.groupBox_ct_kp)
         self.lineEdit_ct_kp.setObjectName(u"lineEdit_ct_kp")
         self.lineEdit_ct_kp.setGeometry(QRect(40, 20, 121, 21))
-        self.label_22 = QLabel(self.groupBox_7)
+        self.label_22 = QLabel(self.groupBox_ct_kp)
         self.label_22.setObjectName(u"label_22")
         self.label_22.setGeometry(QRect(10, 40, 351, 41))
         self.tabWidget.addTab(self.tab_PID_controller, "")
@@ -536,27 +536,67 @@ class Ui_MainWindow(object):
         self.plainTextEdit_ctrl_code.setObjectName(u"plainTextEdit_ctrl_code")
         font = QFont()
         font.setFamilies([u"Ubuntu"])
-        font.setPointSize(12)
+        font.setPointSize(14)
         font.setWeight(QFont.Medium)
         font.setItalic(False)
         font.setKerning(True)
         self.plainTextEdit_ctrl_code.setFont(font)
         self.plainTextEdit_ctrl_code.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.PointingHandCursor))
-        self.plainTextEdit_ctrl_code.setStyleSheet(u"font: 500 12pt \"Ubuntu\";\n"
-"background-color: rgb(237, 251, 255);")
+        self.plainTextEdit_ctrl_code.setStyleSheet(u"font: 500 14pt \"Ubuntu\";\n"
+"background-color: rgb(104, 104, 104);")
         self.plainTextEdit_ctrl_code.setFrameShape(QFrame.Shape.WinPanel)
         self.plainTextEdit_ctrl_code.setFrameShadow(QFrame.Shadow.Plain)
         self.plainTextEdit_ctrl_code.setLineWidth(1)
         self.plainTextEdit_ctrl_code.setMidLineWidth(0)
+        self.plainTextEdit_ctrl_code.setPlainText(u"")
 
         self.verticalLayout_13.addWidget(self.plainTextEdit_ctrl_code)
 
-        self.verticalSpacer = QSpacerItem(818, 68, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        self.label_ctrl_code_file_status = QLabel(self.tab_generic_controller)
+        self.label_ctrl_code_file_status.setObjectName(u"label_ctrl_code_file_status")
+        font1 = QFont()
+        font1.setFamilies([u"Ubuntu"])
+        font1.setPointSize(10)
+        font1.setBold(False)
+        font1.setItalic(False)
+        self.label_ctrl_code_file_status.setFont(font1)
+        self.label_ctrl_code_file_status.setWordWrap(False)
+
+        self.verticalLayout_13.addWidget(self.label_ctrl_code_file_status)
+
+        self.label_ctrl_code_ESP32_status = QLabel(self.tab_generic_controller)
+        self.label_ctrl_code_ESP32_status.setObjectName(u"label_ctrl_code_ESP32_status")
+        self.label_ctrl_code_ESP32_status.setStyleSheet(u"color: rgb(255, 0, 0);")
+
+        self.verticalLayout_13.addWidget(self.label_ctrl_code_ESP32_status)
+
+        self.verticalSpacer = QSpacerItem(818, 15, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.verticalLayout_13.addItem(self.verticalSpacer)
 
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.verticalLayout_7 = QVBoxLayout()
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.pushButton_load_ctrl_code_file = QPushButton(self.tab_generic_controller)
+        self.pushButton_load_ctrl_code_file.setObjectName(u"pushButton_load_ctrl_code_file")
+        self.pushButton_load_ctrl_code_file.setStyleSheet(u"background-color: rgb(255, 194, 52);")
+
+        self.verticalLayout_7.addWidget(self.pushButton_load_ctrl_code_file)
+
+        self.pushButton_save_ctrl_code_file = QPushButton(self.tab_generic_controller)
+        self.pushButton_save_ctrl_code_file.setObjectName(u"pushButton_save_ctrl_code_file")
+        self.pushButton_save_ctrl_code_file.setStyleSheet(u"background-color: rgb(128, 238, 104);")
+
+        self.verticalLayout_7.addWidget(self.pushButton_save_ctrl_code_file)
+
+
+        self.horizontalLayout_5.addLayout(self.verticalLayout_7)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer)
+
         self.verticalLayout_10 = QVBoxLayout()
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.label_4 = QLabel(self.tab_generic_controller)
@@ -586,9 +626,9 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addLayout(self.verticalLayout_10)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(100, 20, QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum)
 
-        self.horizontalLayout_5.addItem(self.horizontalSpacer)
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_4)
 
         self.pushButton_send_code_ESP32 = QPushButton(self.tab_generic_controller)
         self.pushButton_send_code_ESP32.setObjectName(u"pushButton_send_code_ESP32")
@@ -690,13 +730,13 @@ class Ui_MainWindow(object):
         self.lineEdit_manual_input.setFrame(True)
         self.label_manual_input = QLabel(self.groupBox_manual_input)
         self.label_manual_input.setObjectName(u"label_manual_input")
-        self.label_manual_input.setGeometry(QRect(10, 60, 91, 21))
+        self.label_manual_input.setGeometry(QRect(10, 50, 91, 41))
         self.label_manual_input.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_manual_input.setWordWrap(True)
         self.horizontalSlider_manual_input = QSlider(self.groupBox_manual_input)
         self.horizontalSlider_manual_input.setObjectName(u"horizontalSlider_manual_input")
         self.horizontalSlider_manual_input.setGeometry(QRect(30, 30, 131, 18))
-        self.horizontalSlider_manual_input.setMinimum(-255)
+        self.horizontalSlider_manual_input.setMinimum(0)
         self.horizontalSlider_manual_input.setMaximum(255)
         self.horizontalSlider_manual_input.setOrientation(Qt.Orientation.Horizontal)
         self.horizontalSlider_manual_input.setInvertedAppearance(False)
@@ -923,7 +963,7 @@ class Ui_MainWindow(object):
         self.groupBox_ct_td.setTitle(QCoreApplication.translate("MainWindow", u"A\u00e7\u00e3o Derivativa (pode ser desabilitada)", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"Td, em [seg] :", None))
         self.lineEdit_ct_td.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.groupBox_7.setTitle(QCoreApplication.translate("MainWindow", u"A\u00e7\u00e3o Proporcional", None))
+        self.groupBox_ct_kp.setTitle(QCoreApplication.translate("MainWindow", u"A\u00e7\u00e3o Proporcional", None))
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"Kp :", None))
         self.lineEdit_ct_kp.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"Ex.: Kp = 2 indica que, supondo apenas a\u00e7\u00e3o proporcional,\n"
@@ -931,38 +971,10 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_PID_controller), QCoreApplication.translate("MainWindow", u"PID em \"s\"", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_FT_controller), QCoreApplication.translate("MainWindow", u"FT em \"s\"", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo C/C++ para c\u00e1lculo da a\u00e7\u00e3o de controle:", None))
-        self.plainTextEdit_ctrl_code.setPlainText(QCoreApplication.translate("MainWindow", u"///////////////////////////////////////////////////////////////////\n"
-"// Implemente o calculo da acao de controle aqui.\n"
-"//\n"
-"// Variaveis que voce pode usar (jah estao disponiveis):\n"
-"//\n"
-"//   t           -> tempo [s]\n"
-"//   ctrl_last_t -> ultimo instante de tempo em que o\n"
-"//                  codigo do controlador foi executado [s].\n"
-"//                  Obs.: (t - ctrl_last_t) deve ser bem proximo\n"
-"//                  do intervalo de controle = 10ms.\n"
-"//\n"
-"//   ym          -> vetor de sinais medidos: ym[0] a ym[3]:\n"
-"//                  ym[0] = posicao em [graus].\n"
-"//                  ym[1] = velocidade angular [graus/s].\n"
-"//\n"
-"//\n"
-"//   ref         -> vetor de sinais de referencia: ref[0].\n"
-"//\n"
-"//   u           -> vetor de sinais de entrada da planta u[0].\n"
-"//\n"
-"//   xc          -> vetor de estados do controlador\n"
-"//                  (inicializados com valor zero): xc[0] a xc[5].\n"
-"//                  Use para implementar um controlador\n"
-"//         "
-                        "         dinamico, ao inves de um estatico.\n"
-"\n"
-"// Ensaio em malha aberta: envia o valor de comando PWM,\n"
-"// alterado via interface grafica, diretamente para o motor BLDC NIDEC.\n"
-"\n"
-"// Aplica o valor diretamente na entrada do sistema\n"
-"u[0] = ref[0];\n"
-"", None))
+        self.label_ctrl_code_file_status.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo Inicial.", None))
+        self.label_ctrl_code_ESP32_status.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo N\u00e3o Enviado para o ESP32.", None))
+        self.pushButton_load_ctrl_code_file.setText(QCoreApplication.translate("MainWindow", u"Carregar Arquivo...", None))
+        self.pushButton_save_ctrl_code_file.setText(QCoreApplication.translate("MainWindow", u"Salvar Arquivo...", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Selecione um Template para o c\u00f3digo do controlador:", None))
         self.comboBox_ctrl_code.setItemText(0, QCoreApplication.translate("MainWindow", u"Malha Aberta", None))
         self.comboBox_ctrl_code.setItemText(1, QCoreApplication.translate("MainWindow", u"P", None))
@@ -993,8 +1005,14 @@ class Ui_MainWindow(object):
         self.label_manual_input.setText(QCoreApplication.translate("MainWindow", u"PWM =", None))
         self.pushButton_manual_input.setText(QCoreApplication.translate("MainWindow", u"Zero", None))
         self.groupBox_SaveData.setTitle(QCoreApplication.translate("MainWindow", u"Dados", None))
+#if QT_CONFIG(tooltip)
+        self.commandLinkButton_save_data.setToolTip(QCoreApplication.translate("MainWindow", u"Clique aqui para salvar os dados como um arquivo de texto CSV.", None))
+#endif // QT_CONFIG(tooltip)
         self.commandLinkButton_save_data.setText(QCoreApplication.translate("MainWindow", u"Salvar Dados", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Pontos Coletados:", None))
+#if QT_CONFIG(tooltip)
+        self.lcdNumber_dados_coletados.setToolTip(QCoreApplication.translate("MainWindow", u"N\u00famero de pontos coletados.", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.pushButton_start.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>Iniciar o experimento.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

@@ -34,7 +34,7 @@ void ControlSystem::setup_sensors(void) {
 
 // Initialize and configure actuation processes.
 void ControlSystem::setup_actuators(void) {
-  // DC Brushless NIDEC motor configuration.
+  // DC motor configuration.
   pinMode(DIR_1, OUTPUT);
   pinMode(DIR_2, OUTPUT);
 
@@ -118,6 +118,3 @@ void ControlSystem::measure_signals(float t) {
   ym[2] = 0.0;
   ym[3] = 0.0;
 }
-
-// The next line will include the actual control law.
-#include "control_strategy.h"

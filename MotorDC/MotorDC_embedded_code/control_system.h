@@ -30,7 +30,7 @@
 
 // Number of filter internal states.
 #ifndef CTRL_SYS_NF
-#define CTRL_SYS_NF 1
+#define CTRL_SYS_NF 4
 #endif
 
 // Number of plant manipulated inputs.

@@ -3,7 +3,6 @@ from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont
 
 # Time series graphing library for PyQt/PySide.
-from click import command
 import pyqtgraph as pg
 
 # To find the path of the current script file.
@@ -878,7 +877,7 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         ctrl_code = self.plainTextEdit_ctrl_code.toPlainText()
 
-        filename = os.path.abspath(os.path.pardir) + os.path.sep + "embedded_code" + os.path.sep + "template_controller.txt"
+        filename = os.path.join(os.path.dirname(__file__),"..","Aerogenerator_embedded_code", "control_strategy.txt")
         print(f"Gravando arquivo: {filename}")
         with open(filename,'w') as ctrl_code_file:
             try:
