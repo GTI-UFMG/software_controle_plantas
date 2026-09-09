@@ -159,15 +159,21 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
         
     def send_code_to_ESP32(self):        
         
+        # Read the CLI_commands.txt file to get the commands to compile and upload the code to the ESP32.
+        embedded_code_file = os.path.join(os.path.dirname(__file__), "..", "Aerogenerator_embedded_code", "Aerogenerator_embedded_code.ino")
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "CLI_commands.txt"), "r") as file:
+                CLI_commands = file.read().replace("EMBEDDED_CODE.ino",embedded_code_file).replace("SERIAL_PORT_ESP32", self.comm_agent.get_serial_portname()).splitlines()
+        except FileNotFoundError:
+            self.plainTextEdit_message_compilation.setPlainText("Erro: Arquivo CLI_commands.txt não encontrado.\n")
+            return False
+
         self.plainTextEdit_message_compilation.setPlainText("Compilando o código para o ESP32...\n")           
         
         # Force redraw of the GUI to show the compilation message before proceeding to compile the code for the ESP32.
         QtCore.QCoreApplication.processEvents()
-                
-        command = "arduino-cli compile " + os.path.join(os.path.dirname(__file__),"..","Aerogenerator_embedded_code", "Aerogenerator_embedded_code.ino") + " --fqbn esp32:esp32:esp32da"
-        self.plainTextEdit_message_compilation.appendPlainText(command)
         
-        result = subprocess.run(command,capture_output=True,text=True)
+        result = subprocess.run(CLI_commands[0],capture_output=True,text=True)
         
         if result.returncode == 1:
             # The command failed, so we display the error message in red.
@@ -194,10 +200,7 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
         # Force redraw of the GUI to show the upload message before proceeding to upload the code to the ESP32.
         QtCore.QCoreApplication.processEvents()
         
-        command = "arduino-cli upload -p " + self.comm_agent.get_serial_portname() + " " + os.path.join(os.path.dirname(__file__), "..", "Aerogenerator_embedded_code", "Aerogenerator_embedded_code.ino") + " --fqbn esp32:esp32:esp32da"
-        self.plainTextEdit_message_upload.appendPlainText(command)
-        
-        result = subprocess.run(command,capture_output=True,text=True)
+        result = subprocess.run(CLI_commands[1],capture_output=True,text=True)
             
         if result.returncode == 1:
             # The command failed, so we display the error message in red.
