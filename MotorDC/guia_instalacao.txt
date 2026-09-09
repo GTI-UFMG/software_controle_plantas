@@ -1,0 +1,74 @@
+0) Instalar o gerenciador de pacotes do Python:
+
+    No Linux:
+        sudo apt install pip
+
+1) Criar um novo ambiente virtual Python:
+
+    No Linux:
+        python -m venv labctrl
+        source ./labctrl/bin/activate
+
+2) Instalar pacotes Python
+
+    pip install pyside6 numpy pyserial
+
+            ** Erro 1: ao rodar a GUI logo depois dos passos acima:
+
+            qt.qpa.plugin: From 6.5.0, xcb-cursor0 or libxcb-cursor0 is needed to load the Qt xcb platform plugin.
+            qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+            This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+            Available platform plugins are: minimal, minimalegl, offscreen, xcb, vnc, vkkhrdisplay, linuxfb, wayland-egl, wayland, eglfs.
+
+            Aborted (core dumped)
+
+            SOLUCAO:
+                sudo apt install libxcb-cursor0
+
+3) No Linux é necessário dar acesso às portas seriais, adicionando o seu usuário como
+parte do grupo que tem acesso a elas (o grupo "dialout") e permitindo que
+esse grupo possa acessar o diretorio dev:
+
+    sudo usermod -a -G dialout <username>
+    sudo chown root.dialout /dev
+
+No Linux Mint 21.2 foi necessário remover o serviço de leitura de terminais Braille
+que estava impedindo a GUI de acessar a serial para escrita:
+
+   sudo apt remove brltty
+
+4) Baixar Arduino IDE 2.3.6 e instalar (necessário para compilar o código embarcado).
+
+5) Rodar a Arduino IDE e selecionar:
+
+    Tools > Boards > Boards Manager...
+
+    Selecionar o suporte a "esp32 by Espressif Systems" e instalar o pacote de software.
+
+    Tools -> Manage Libraries...
+
+    Selecionar o suporte para "ESP32Encoder by Kevin Harrington" e instalar o pacote de software.
+
+6) No Arduino IDE, abrir o arquivo
+
+    MotorDC_embedded_code.ino
+
+Isso abrirá todos os arquivos do código embarcado.
+
+7) Selecionar a placa ESP32 adequada. Algumas opções comuns são:
+
+    ESP32-WROOM-DA
+ou  WEMOS D1 R32 (se a placa é maior, mais parecida com a de um Arduino Uno).
+
+Verifique também se a porta serial foi detectada corretamente.
+No Linux, dependendo do tipo de chip USB-Serial usado na placa ESP32,
+será criado um arquivo:
+
+    /dev/ttyUSB0
+ou  /dev/ttyACM0
+
+8) Uma vez que a placa certa e a porta serial correta estejam selecionadas.
+clicar no botão de "upload", marcado com "->", para compilar o código e programar
+o ESP32.
+
