@@ -179,8 +179,6 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
             self.plainTextEdit_message_compilation.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
             self.label_compilation_status.setText("Falha na compilação do código para o ESP32.")
             self.label_compilation_status.setStyleSheet("color: red;")
-            # Reopen the serial port after uploading the code to the ESP32.
-            self.comm_agent.resume_communications()
             return False
             
         if result.returncode == 1:
@@ -189,8 +187,6 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
             self.plainTextEdit_message_compilation.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
             self.label_compilation_status.setText("Falha na compilação do código para o ESP32.")
             self.label_compilation_status.setStyleSheet("color: red;")
-            # Reopen the serial port after uploading the code to the ESP32.
-            self.comm_agent.resume_communications()
             return False
         else:
             # The command succeeded, so we display the output message in green.
@@ -217,6 +213,7 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
             self.plainTextEdit_message_upload.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
             self.label_upload_status.setText("Falha ao enviar o código para o ESP32.")
             self.label_upload_status.setStyleSheet("color: red;")
+            # Reopen the serial port after uploading the code to the ESP32.
             self.comm_agent.resume_communications()
             return False
 
@@ -226,6 +223,7 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
             self.plainTextEdit_message_upload.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
             self.label_upload_status.setText("Falha ao enviar o código para o ESP32.")
             self.label_upload_status.setStyleSheet("color: red;")
+            # Reopen the serial port after uploading the code to the ESP32.
             self.comm_agent.resume_communications()
             return False
         else:
