@@ -1688,7 +1688,7 @@ border-color: rgb(85, 0, 255);</string>
                 </rect>
                </property>
                <property name="minimum">
-                <number>0</number>
+                <number>-255</number>
                </property>
                <property name="maximum">
                 <number>255</number>

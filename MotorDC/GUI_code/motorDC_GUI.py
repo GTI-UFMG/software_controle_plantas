@@ -171,15 +171,26 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
         
         # Force redraw of the GUI to show the compilation message before proceeding to compile the code for the ESP32.
         QtCore.QCoreApplication.processEvents()
-        
-        result = subprocess.run(CLI_commands[0],capture_output=True,text=True)
-        
+
+        try:
+            result = subprocess.run(CLI_commands[0].split(),capture_output=True,text=True)
+        except Exception as e:
+            self.plainTextEdit_message_compilation.appendPlainText(f"Erro ao executar o comando de compilação: {e}\n")
+            self.plainTextEdit_message_compilation.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
+            self.label_compilation_status.setText("Falha na compilação do código para o ESP32.")
+            self.label_compilation_status.setStyleSheet("color: red;")
+            # Reopen the serial port after uploading the code to the ESP32.
+            self.comm_agent.resume_communications()
+            return False
+            
         if result.returncode == 1:
             # The command failed, so we display the error message in red.
             self.plainTextEdit_message_compilation.appendPlainText(result.stderr)
             self.plainTextEdit_message_compilation.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
             self.label_compilation_status.setText("Falha na compilação do código para o ESP32.")
             self.label_compilation_status.setStyleSheet("color: red;")
+            # Reopen the serial port after uploading the code to the ESP32.
+            self.comm_agent.resume_communications()
             return False
         else:
             # The command succeeded, so we display the output message in green.
@@ -198,15 +209,24 @@ class Dialog_ESP32Code(QtWidgets.QDialog, Ui_Dialog_ESP32Code):
         
         # Force redraw of the GUI to show the upload message before proceeding to upload the code to the ESP32.
         QtCore.QCoreApplication.processEvents()
-        
-        result = subprocess.run(CLI_commands[1],capture_output=True,text=True)
-            
+
+        try:
+            result = subprocess.run(CLI_commands[1].split(),capture_output=True,text=True)
+        except Exception as e:
+            self.plainTextEdit_message_upload.appendPlainText(f"Erro ao executar o comando de upload: {e}\n")
+            self.plainTextEdit_message_upload.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
+            self.label_upload_status.setText("Falha ao enviar o código para o ESP32.")
+            self.label_upload_status.setStyleSheet("color: red;")
+            self.comm_agent.resume_communications()
+            return False
+
         if result.returncode == 1:
             # The command failed, so we display the error message in red.
             self.plainTextEdit_message_upload.appendPlainText(result.stderr)
             self.plainTextEdit_message_upload.setStyleSheet("background-color: #FF9999; color: #000000; font-family: Ubuntu; font-size: 10pt;")
             self.label_upload_status.setText("Falha ao enviar o código para o ESP32.")
             self.label_upload_status.setStyleSheet("color: red;")
+            self.comm_agent.resume_communications()
             return False
         else:
             # The command succeeded, so we display the output message in green.
@@ -242,8 +262,12 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.controlled_output = "speed"
         self.radioButton_speed.setChecked(True)
 
+        # No dead-zone compensation by default.
+        self.groupBox_deadzone_comp.setChecked(False)
+
         self.test_type = "open loop"
         self.radioButton_open_loop.setChecked(True)
+        self.on_radioButton_open_loop_toggled()
 
         self.reference_input = "manual"
         self.radioButton_manual.setChecked(True)
@@ -295,10 +319,24 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             plot2_trace = "PWM input"
             plot2_ylabel = "PWM value"
             self.label_manual_input.setText("PWM =")
+            self.horizontalSlider_manual_input.setMaximum(255)
+            self.horizontalSlider_manual_input.setMinimum(-255)
+            self.horizontalSlider_manual_input.setValue(0)
         else:
             plot2_trace = "control action"
             plot2_ylabel = "control action"
-            self.label_manual_input.setText("Referência =")
+            if self.controlled_output == "speed":
+                self.label_manual_input.setText("Referência [deg/s] =")
+                self.horizontalSlider_manual_input.setMaximum(2000)
+                self.horizontalSlider_manual_input.setMinimum(-2000)
+                self.horizontalSlider_manual_input.setValue(0)
+                self.horizontalSlider_manual_input.setTickInterval(100)
+            else:
+                self.label_manual_input.setText("Referência [deg] =")
+                self.horizontalSlider_manual_input.setMaximum(2000)
+                self.horizontalSlider_manual_input.setMinimum(-2000)
+                self.horizontalSlider_manual_input.setValue(0)
+                self.horizontalSlider_manual_input.setTickInterval(100)
 
         # Plot 1 configuration
         self.widget_plot_1.getPlotItem().clear()
@@ -416,7 +454,7 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_stop.setDisabled(False)
         
         self.horizontalSlider_manual_input.setValue(0)
-        self.lineEdit_manual_input.setText("0") 
+        self.lineEdit_manual_input.setText("0")
         
         # Clear charts data
         self.x_data1 = []
@@ -650,7 +688,7 @@ class GUIWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def send_code_to_ESP32(self):
             # Save the code from the PlainTextEdit_ctrl_code to a temporary file.
-            filename = os.path.join(os.path.dirname(__file__),"..","Aerogenerator_embedded_code", "control_strategy.txt")
+            filename = os.path.join(os.path.dirname(__file__),"..","MotorDC_embedded_code", "control_strategy.txt")
             print(filename)
             try:
                 with open(filename, 'w') as ctrl_code_file:

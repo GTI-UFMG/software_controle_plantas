@@ -72,3 +72,19 @@ ou  /dev/ttyACM0
 clicar no botão de "upload", marcado com "->", para compilar o código e programar
 o ESP32.
 
+
+9) Baixar e instalar a Interface de linha de Comando (CLI) para o ambiente de compilação Arduino.
+Isto permitirá compilar códigos de controladores genéricos diretamente da Interface Gráfica do Usuário (GUI),
+sem precisar abrir o Arduino-IDE:
+
+    Endereço para baixar (10/09/2026):
+        https://docs.arduino.cc/arduino-cli/installation/?_gl=1*14mwdnx*_up*MQ..*_ga*MjAzNTk2Njc3OC4xNzg5MDQ2ODYz*_ga_NEXN8H46L5*czE3ODkwNDY4NjAkbzEkZzAkdDE3ODkwNDY4NjAkajYwJGwwJGgxMjU1MjcwMjM4
+
+    Descompactar o arquivo obtido:
+        tar xvzf arduino-cli_1.5.2-rc.1_Linux_64bit.tar.gz
+    
+    Mover para o diretório de programas executáveis (instalação no Linux):
+        sudo mv arduino-cli /usr/bin/
+
+    Instalação da biblioteca ESP32Encoder para Arduino-CLI (instalação no Linux):
+        arduino-cli lib install "ESP32Encoder"

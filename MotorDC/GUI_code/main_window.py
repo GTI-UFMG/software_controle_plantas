@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windoweNbsqu.ui'
+## Form generated from reading UI file 'main_windowcOtejs.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -736,7 +736,7 @@ class Ui_MainWindow(object):
         self.horizontalSlider_manual_input = QSlider(self.groupBox_manual_input)
         self.horizontalSlider_manual_input.setObjectName(u"horizontalSlider_manual_input")
         self.horizontalSlider_manual_input.setGeometry(QRect(30, 30, 131, 18))
-        self.horizontalSlider_manual_input.setMinimum(0)
+        self.horizontalSlider_manual_input.setMinimum(-255)
         self.horizontalSlider_manual_input.setMaximum(255)
         self.horizontalSlider_manual_input.setOrientation(Qt.Orientation.Horizontal)
         self.horizontalSlider_manual_input.setInvertedAppearance(False)
